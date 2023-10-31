@@ -1,4 +1,4 @@
-# Project Name
+# Loogle Gens
 > Outline a brief description of your project.
 > Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
 
@@ -76,10 +76,6 @@ Give credit here.
 - This project was inspired by...
 - This project was based on [this tutorial](https://www.example.com).
 - Many thanks to...
-
-
-## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
 
 
 <!-- Optional -->
