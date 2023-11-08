@@ -31,7 +31,7 @@ def Sigma(m: list[list[int]],f: callable) -> float:
 def RGBtoGrayscale(r: list([list[int]]),g: list([list[int]]),b: list([list[int]])) -> list([list[int]]):
     #membuat matrix dengan ukuran sama
     gray = lambda red,green,blue : 0.299 * red + 0.587 * green + 0.114 * blue
-    result = [[gray(r[i][j],g[i][j],b[i][j]) for j in r[0]] for i in r]
+    result = [[gray(r[i][j],g[i][j],b[i][j]) for j in range(len(r[0]))] for i in range(len(r))]
     return result
 
 # m adalah matrix gambar yang sudah menjadi grayscale
