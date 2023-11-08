@@ -17,8 +17,11 @@ def Entropy(p: int, i: int, j:int) -> float:
     retval = retval * (-1)
     return retval
 
-def Sigma(m: list[list[int]],f: callable, baris: int, kolom: int) -> float:
+#now takes size dirrectly from m
+def Sigma(m: list[list[int]],f: callable) -> float:
     #NOTE : I itu baris(up down), J itu kolom (left right)
+    baris = len(m)
+    kolom = len(m[0])
     total: float = 0
     for i in range(baris):
         for j in range(kolom):
