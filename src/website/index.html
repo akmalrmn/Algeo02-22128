@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    
+    <button id="loadImagesButton">Load Images</button>
+    
+    <div id="image-container"></div>
+    
+    <div id="pagination-container">
+        <button id="prevPageButton">Previous Page</button>
+        <span id="pageIndicator">Page 1</span>
+        <button id="nextPageButton">Next Page</button>
+    </div>
+
+    <script>
+        let currentPage = 1;
+
+        async function fetchImages(page) {
+            const response = await fetch(`/get_images?page=${page}`);
+            const data = await response.json();
+
+            const imageContainer = document.getElementById('image-container');
+            imageContainer.innerHTML = '';  // Clear existing images
+
+            data.images.forEach(image => {
+                const imgElement = document.createElement('img');
+                imgElement.src = image;
+                imgElement.style.maxWidth = '300px';
+                imgElement.style.margin = '10px';
+                imageContainer.appendChild(imgElement);
+            });
+
+            // Update the page indicator
+            const pageIndicator = document.getElementById('pageIndicator');
+            pageIndicator.textContent = `Page ${page}`;
+            loadImagesButton.style.display = "none";
+        }
+
+        const loadImagesButton = document.getElementById('loadImagesButton');
+        const prevPageButton = document.getElementById('prevPageButton');
+        const nextPageButton = document.getElementById('nextPageButton');
+
+        loadImagesButton.addEventListener('click', async () => {
+            const loadResponse = await fetch('/load_images');
+            if (loadResponse.ok) {
+                currentPage = 1;
+                fetchImages(currentPage);  // Fetch and display images after the button is clicked
+            }
+        });
+
+        prevPageButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchImages(currentPage);
+            }
+        });
+
+        nextPageButton.addEventListener('click', () => {
+            currentPage++;
+            fetchImages(currentPage);
+        });
+    </script>
+</body>
+</html>
