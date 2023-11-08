@@ -13,7 +13,8 @@ def Homogeneity(p: int, i: int, j:int) -> float:
     return retval
 
 def Entropy(p: int, i: int, j:int) -> float:
-    retval: float = p * math.log10(p)
+    epsilon = 1e-10
+    retval: float = p * math.log10(p + epsilon) #epsilon added to prevent log10(0)
     retval = retval * (-1)
     return retval
 
@@ -35,7 +36,7 @@ def RGBtoGrayscale(r: list([list[int]]),g: list([list[int]]),b: list([list[int]]
     return result
 
 # m adalah matrix gambar yang sudah menjadi grayscale
-def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int = 0) -> float:
+def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int = 0) -> list[list[float]]:
     #NOTE : Asumsi X[i][j] i adalah baris (atas bawah)
 
     #KAMUS LOKAL
@@ -68,8 +69,8 @@ def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int =
     #iterasi matrix dan penambahan langsung dengan transpos nya
     for i in range(baris-row_offset):
         for j in range(kolom-col_offset):
-            row = m[i][j]
-            col = m[i + row_offset][j + col_offset]
+            row = int(m[i][j])
+            col = int(m[i + row_offset][j + col_offset])
             GLCM[row][col] += 1
             #karena matrix akan ditambahkan dengan transpose nya sendiri maka
             GLCM[col][row] += 1
@@ -82,10 +83,7 @@ def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int =
         for j in range(depth):
             GLCM[i][j] = float(GLCM[i][j] / totalValue)
 
-    print(GLCM)
-
-coocurence(testMatrix,4)
-
+    return(GLCM)
 
 
     
