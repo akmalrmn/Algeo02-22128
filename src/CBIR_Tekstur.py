@@ -1,4 +1,4 @@
-
+import read as r
 import math
 #function blyad
 
@@ -86,4 +86,11 @@ def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int =
     return(GLCM)
 
 
-    
+def process_texture(filepath: str) -> list[float]:
+    r.readImgtoRGB(filepath)
+    grayscale = RGBtoGrayscale(r.R, r.G, r.B)
+    GLCM = coocurence(grayscale,256)
+    contrast = Sigma(GLCM,Contrast)
+    homogeneity = Sigma(GLCM,Homogeneity)
+    entropy = Sigma(GLCM, Entropy)
+    return ([contrast, homogeneity, entropy])
