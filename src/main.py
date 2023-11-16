@@ -16,7 +16,6 @@ current_directory = os.getcwd()
 app = FastAPI()
 
 # Global variables
-image_data = []
 img_data_dict = {}
 last_mode = None
 
@@ -60,6 +59,7 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
 
     process_search(mode)
     process_dataset(mode)
+
     last_mode = mode
 
     image_data = []
@@ -72,7 +72,7 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
 
         count += 1
         print(img_data_dict[filename])
-        value = cosineSimilarity(search_value,img_data_dict[filename]["value"])  # Assign a random value (replace with your logic)
+        value = cosineSimilarity(search_value,img_data_dict[filename]["value"])
         image_data.append({"url": image_url, "similarity": value})
 
         # Sort the images based on their assigned values
@@ -91,13 +91,12 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
     }
 # Process image
 
-# Add an endpoint to load and store the image URLs when the button is clicked
 @app.get("/reset")
 async def reset():
-    global image_data
     global img_data_dict
+    global last_mode
+    last_mode = None
     img_data_dict = {}
-    image_data = []  # Clear the stored data
     return {"message": "resetted"}
 
 @app.get("/force_load")
@@ -173,16 +172,20 @@ def process_search(mode: str = "TEKSTUR"):
 
                     if mode == "TEKSTUR" and (last_mode != "TEKSTUR" or not filename in img_data_dict):
                         value = cbt.process_texture(full_path)
+                        search_value = value
+                        img_data_dict[filename] = {"value":value}
 
                     elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
                         value = cw.process_color(full_path)
+                        search_value = value
+                        img_data_dict[filename] = {"value":value}
+
                     
-                    img_data_dict[filename] = {"value":value}
 
                     #NOTE : NANTI MASUKIN SINI
                     #elif mode == "WARNA":
             
-                    search_value = value
+                    
                 end_time = time.time()
                 print(f"[{end_time - start_time}]")
 
@@ -211,11 +214,13 @@ def process_dataset(mode: str = "TEKSTUR"):
                     print(mode)
                     if mode == "TEKSTUR" and (last_mode != "TEKSTUR" or not filename in img_data_dict):
                         value = cbt.process_texture(full_path)
+                        img_data_dict[filename] = {"value":value}
 
                     elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
                         value = cw.process_color(full_path)
+                        img_data_dict[filename] = {"value":value}
 
-                    img_data_dict[filename] = {"value":value}
+                    
 
                     #NOTE : NANTI MASUKIN SINI
                     #elif mode == "WARNA":
