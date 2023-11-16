@@ -3,7 +3,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from typing import List
 import math
-import logging
 import os
 import read as r
 import CBIR_Tekstur as cbt
@@ -13,24 +12,20 @@ import time
 
 current_directory = os.getcwd()
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI()
 
 # Global variables
 image_data = []
 img_data_dict = {}
+last_mode = None
 
 
-log_file = None
-with open("logs/log.txt", "a") as log_file:
-    log_file.write("start of log\n")
 
 # Serve the HTML page
 @app.get("/", response_class=HTMLResponse)
 async def read_gallery(request: Request):
-    with open("index.html", "r") as file:
+    with open("website/index.html", "r") as file:
         html_content = file.read()
     return HTMLResponse(content=html_content, status_code=200)
 
@@ -45,7 +40,7 @@ async def display_upload():
 
     global current_directory
 
-    images_folder = "uploaded"
+    images_folder = "website/uploaded"
     if os.path.exists(images_folder) and os.path.isdir(images_folder):
             for filename in os.listdir(images_folder):
                 print("process_search :",filename)
@@ -56,14 +51,16 @@ async def display_upload():
 
 
 @app.get("/get_images")
-async def get_images(page: int = 1):
+async def get_images(page: int = 1, mode = "TEKSTUR"):
     global img_data_dict
     global search_value
+    global last_mode
 
     #log_file.write("fetching images\n")
 
-    #process_search()
-    #process_dataset()
+    process_search(mode)
+    process_dataset(mode)
+    last_mode = mode
 
     image_data = []
     images_folder = "dataset"
@@ -105,11 +102,10 @@ async def reset():
 async def forceLoad():
     process_search()
     process_dataset()
-    logger.info("FORCE LODADED")
 
 @app.post("/upload_dataset")
 async def upload_dataset(files: List[UploadFile] = File(...)):
-    dataset_folder = "dataset"
+    dataset_folder = "website/dataset"
 
     # Save the newly uploaded images
     for file in files:
@@ -120,7 +116,6 @@ async def upload_dataset(files: List[UploadFile] = File(...)):
         with open(filename, "wb") as image_file:
             image_file.write(file.file.read())
 
-    process_dataset()
     return {"filenames": [file.filename for file in files]}
 # Clear existing dataset images
 
@@ -128,7 +123,7 @@ async def upload_dataset(files: List[UploadFile] = File(...)):
 @app.post("/upload_search")
 async def upload_search(files: List[UploadFile] = File(...)):
     # Path to the "uploaded" folder
-    upload_folder = "uploaded"
+    upload_folder = "website/uploaded"
 
     # Clear existing images in the folder
     for existing_file in os.listdir(upload_folder):
@@ -151,10 +146,8 @@ async def upload_search(files: List[UploadFile] = File(...)):
         with open(filename, "wb") as image_file:
             image_file.write(file.file.read())
 
-        app.mount("/uploaded", StaticFiles(directory="uploaded"), name="images")
+        app.mount("/uploaded", StaticFiles(directory=upload_folder), name="images")
 
-
-    process_search()
     return {"filenames": [file.filename for file in files]}
 
 def process_search(mode: str = "TEKSTUR"):
@@ -162,7 +155,7 @@ def process_search(mode: str = "TEKSTUR"):
     global current_mode
     global current_directory
 
-    images_folder = "uploaded"
+    images_folder = "website/uploaded"
     if os.path.exists(images_folder) and os.path.isdir(images_folder):
             for filename in os.listdir(images_folder):
                 start_time = time.time()
@@ -171,17 +164,16 @@ def process_search(mode: str = "TEKSTUR"):
                 
                     web_path = f"/uploaded/{filename}"
 
-                    relative_path = f"uploaded/{filename}"
+                    relative_path = f"{images_folder}/{filename}"
                     full_path = os.path.join(current_directory, relative_path)
                     
-                    app.mount("/uploaded", StaticFiles(directory="uploaded"), name="uploaded")
+                    #app.mount("/uploaded", StaticFiles(directory=images_folder), name="uploaded")
 
-                    if mode == "TEKSTUR":
-                        #ini nanti pindahin ke CBIR_TEKSTUR
+                    if mode == "TEKSTUR" and (last_mode != "TEKSTUR" or not filename in img_data_dict):
                         value = cbt.process_texture(full_path)
 
-                    elif mode == "WARNA":
-                        value = cw.
+                    elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
+                        value = cw.process_color(full_path)
                     
                     img_data_dict[filename] = {"value":value}
 
@@ -196,11 +188,11 @@ def process_search(mode: str = "TEKSTUR"):
 def process_dataset(mode: str = "TEKSTUR"):
         global current_mode
 
-        images_folder = "dataset"
+        images_folder = "website/dataset"
         image_urls = []
 
         count = 0
-        if os.path.exists(images_folder) and os.path.isdir(images_folder) and count_files("uploaded") >= 1:
+        if os.path.exists(images_folder) and os.path.isdir(images_folder) and count_files("website/uploaded") >= 1:
             
             for filename in os.listdir(images_folder):
                 start_time = time.time()
@@ -210,17 +202,16 @@ def process_dataset(mode: str = "TEKSTUR"):
                     web_path = f"/{images_folder}/{filename}"
                     relative_path = f"{images_folder}/{filename}"
                     full_path = os.path.join(current_directory, relative_path)
-                    app.mount("/dataset", StaticFiles(directory="dataset"), name="dataset")
+                    app.mount("/dataset", StaticFiles(directory=images_folder), name="dataset")
                 
                     count += 1
 
-                    if mode == "TEKSTUR":
-                        #ini nanti pindahin ke CBIR_TEKSTUR
-                        if (current_mode == "TEKSTUR" and not filename in img_data_dict):
-                            value = cbt.process_texture(full_path)
-                        else:
-                            #reprocess all values if changing mode
-                            value = cbt.process_texture(full_path)
+                    print(mode)
+                    if mode == "TEKSTUR" and (last_mode != "TEKSTUR" or not filename in img_data_dict):
+                        value = cbt.process_texture(full_path)
+
+                    elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
+                        value = cw.process_color(full_path)
 
                     img_data_dict[filename] = {"value":value}
 
@@ -228,13 +219,6 @@ def process_dataset(mode: str = "TEKSTUR"):
                     #elif mode == "WARNA":
                 end_time = time.time()
                 print(f"[{end_time - start_time}]")
-
-def cleanup_on_exit():
-    with open("logs/log.txt", "a") as log:
-        log.write("End of log\n")
-    
-# Register the cleanup function to run when the application exits
-atexit.register(cleanup_on_exit)
 
 def cosineSimilarity(matrix1, matrix2):
     # Calculate dot product
