@@ -2,7 +2,6 @@ import cv2
 import os
 import numpy as np
 import time
-import read as r
 
 def hue(r, g, b, delta, Cmax):
     # Calculate hue
@@ -71,7 +70,7 @@ def cbirColor(input_image, dataset_dir, bins=8):
 
 def run():
     dataset_dir = "src/website/images"  
-    input_image = cv2.imread("src/website/images/OIP.jpeg")
+    input_image = cv2.imread("src/we ")
     start_time = time.time()
     sorted_indices, sorted_similarities = cbirColor(input_image, dataset_dir, bins=8)
     end_time = time.time()
@@ -98,16 +97,9 @@ def run():
     cv2.destroyAllWindows()
 
 def process_color(filepath: str) -> list[float]:
-    r.readImgtoRGB(filepath)
-    Cmax = np.maximum.reduce([r.R, r.G, r.B])
-    # Calculate average HSV values
-    delta_values = delta(r.R, r.G, r.B)
-    h_avg = np.mean(hue(r.R, r.G, r.B, delta_values, Cmax))
-    s_avg = np.mean(saturation(Cmax, delta_values))
-    V = Cmax
-    v_avg = np.mean(V)
-
-    return ([h_avg, s_avg, v_avg])
+    image = cv2.imread(filepath)
+    h_avg, s_avg, v_avg = calculateAverageHSV(image)
+    return [h_avg, s_avg, v_avg]
 
 if __name__ == "__main__":
     run()
