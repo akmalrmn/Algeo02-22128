@@ -1,0 +1,46 @@
+.result {
+    background-color: beige ;
+    padding-top: 30px;
+    text-align: center;
+}
+
+.grid-result{
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.result-place{
+    background-color: grey; height: 200px
+}
+
+.result-text{
+    margin-top: 5px;
+    text-align: left;
+}
+
+.upload-dataset-button{
+    background-color: black;
+    color: beige;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-width: 1px;
+    height: 30px;
+    width: 125px;
+    border:none;
+    border-radius: 18px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.upload-dataset-button:hover{
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15)  ; 
+}
+
+.upload-dataset-button:active{
+    opacity: 0.5;
+}

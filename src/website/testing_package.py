@@ -1,8 +1,45 @@
-import read as r
+import cv2
+import os
+import numpy as np
 import math
 #function blyad
 
-testMatrix = [[0,0,1],[1,2,3],[2,3,2]]
+
+def readImgtoRGB(filepath: str):
+        global R
+        global G
+        global B
+    
+        #print("readImgtoRGB : setting colours")
+
+        img_file = str(filepath)
+        pre_img = cv2.imread(img_file, cv2.IMREAD_COLOR)
+
+        if pre_img is None:
+            raise ValueError(f"Error: Unable to read the image at {filepath}")
+        
+        #resize gambar
+        resize_percentage = 50
+
+
+        width = int(len(pre_img[0]) * resize_percentage / 100)
+        height = int(len(pre_img) * resize_percentage / 100)
+
+        ##print(height,width)
+
+        img = cv2.resize(pre_img, (width, height))
+
+        ##print(type(img))
+        ##print('BGR shape: ', img.shape)  # Rows, cols, channels
+
+        # Convert BGR to RGB
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        ##print('RGB shape: ', img_rgb.shape)
+
+        R = [[img_rgb[j][i][0] for i in range(len(img_rgb[0]))] for j in range(len(img_rgb))]
+        G = [[img_rgb[j][i][1] for i in range(len(img_rgb[0]))] for j in range(len(img_rgb))]
+        B = [[img_rgb[j][i][2] for i in range(len(img_rgb[0]))] for j in range(len(img_rgb))]
 
 def Contrast(p: int, i: int, j:int) -> float:
     retval: float = p * (i-j)**2
@@ -87,10 +124,32 @@ def coocurence(m: list([list[int]]), depth: int, distance: int = 1, angle: int =
 
 
 def process_texture(filepath: str) -> list[float]:
-    r.readImgtoRGB(filepath)
-    grayscale = RGBtoGrayscale(r.R, r.G, r.B)
+    global R
+    global G
+    global B
+    readImgtoRGB(filepath)
+    grayscale = RGBtoGrayscale(R, G, B)
     GLCM = coocurence(grayscale,256)
     contrast = Sigma(GLCM,Contrast)
     homogeneity = Sigma(GLCM,Homogeneity)
     entropy = Sigma(GLCM, Entropy)
     return ([contrast, homogeneity, entropy])
+
+def cosineSimilarity(matrix1, matrix2):
+    # Calculate dot product
+    dot = sum(e1 * e2 for e1, e2 in zip(matrix1, matrix2))
+    
+    # Calculate norms
+    norm1 = math.sqrt(sum(e ** 2 for e in matrix1))
+    norm2 = math.sqrt(sum(e ** 2 for e in matrix2))
+    
+    # Calculate cosine similarity
+    similarity = dot / (norm1 * norm2) if (norm1 * norm2) != 0 else 0  # Avoid division by zero
+    
+    return similarity
+
+def count_files(filepath: str) -> int:
+    count = 0
+    for filename in os.listdir(filepath):
+        count+=1
+    return count
