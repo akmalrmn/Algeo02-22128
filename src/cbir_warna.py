@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import time
+import read as r
 
 def hue(r, g, b, delta, Cmax):
     # Calculate hue
@@ -97,14 +98,11 @@ def run():
     cv2.destroyAllWindows()
 
 def process_color(filepath: str) -> list[float]:
-    global R
-    global G
-    global B
-    readImgtoRGB(filepath)
-    Cmax = np.maximum.reduce([r, g, b])
+    r.readImgtoRGB(filepath)
+    Cmax = np.maximum.reduce([r.R, r.G, r.B])
     # Calculate average HSV values
-    delta_values = delta(r, g, b)
-    h_avg = np.mean(hue(r, g, b, delta_values, Cmax))
+    delta_values = delta(r.R, r.G, r.B)
+    h_avg = np.mean(hue(r.R, r.G, r.B, delta_values, Cmax))
     s_avg = np.mean(saturation(Cmax, delta_values))
     V = Cmax
     v_avg = np.mean(V)
