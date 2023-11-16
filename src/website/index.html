@@ -41,6 +41,7 @@
     let currentPage = 1;
     let fileUploaded = false;
     let datasetUploaded = false;
+    let maxPage = 1;
 
     async function displayUpload() {
     const response = await fetch(`/display_upload`);
@@ -75,9 +76,10 @@
         const imageContainer = document.getElementById('image-container');
         imageContainer.innerHTML = '';  // Clear existing images
 
+        maxPage = data.maxPage
         data.images.forEach(image => {
             const imgElement = document.createElement('img');
-            imgElement.src = image;
+            imgElement.src = image.url;
             imgElement.style.maxWidth = '300px';
             imgElement.style.margin = '10px';
             imageContainer.appendChild(imgElement);
@@ -182,17 +184,14 @@
         if (currentPage > 1) {
             currentPage--;
             fetchImages(currentPage);
-            showButton();  // Show the button when navigating between pages
-        }
-        else {
-            fetchImages(currentPage);
         }
     });
 
     nextPageButton.addEventListener('click', () => {
-        currentPage++;
-        fetchImages(currentPage);
-        showButton();  // Show the button when navigating between pages
+        if (currentPage < maxPage) {
+            currentPage++;
+            fetchImages(currentPage);
+        }
     });
     </script>
 </body>
