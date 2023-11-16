@@ -85,8 +85,10 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
     end_index = start_index + images_per_page
 
     # Return the sorted image URLs for the requested page
-    return {"images": [image["url"] for image in image_data[start_index:end_index]],"max_page": (count//images_per_page)}
-
+    return {
+    "images": [{"url": image["url"], "similarity": image["similarity"]} for image in image_data[start_index:end_index]],
+    "max_page": (count // images_per_page)
+    }
 # Process image
 
 # Add an endpoint to load and store the image URLs when the button is clicked
@@ -100,8 +102,8 @@ async def reset():
 
 @app.get("/force_load")
 async def forceLoad():
-    process_search()
-    process_dataset()
+    app.mount("/uploaded", StaticFiles(directory="website/uploaded"), name="images")
+    get_images(1)
 
 @app.post("/upload_dataset")
 async def upload_dataset(files: List[UploadFile] = File(...)):
