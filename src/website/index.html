@@ -60,15 +60,17 @@
 
     async function swap_mode(){
         if (mode == "TEKSTUR"){
-            mode = "WARNA"
+            mode = "WARNA";
         }
-        elif (mode == "WARNA"){
-            mode = "TEKSTUR"
+        else if (mode == "WARNA"){
+            mode = "TEKSTUR";
         }
     }
     async function fetchImages(page) {
-        const response = await fetch(`/get_images?page=${page}`);
+        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
         const data = await response.json();
+
+        console.log("mode :",mode);
 
         const imageContainer = document.getElementById('image-container');
         imageContainer.innerHTML = '';  // Clear existing images
@@ -96,7 +98,7 @@
             for (const file of files) {
                 formData.append('files', file);
             }
-
+            fileUploaded = true
             fetch(`/upload_search`, {
                 method: 'POST',
                 body: formData,
@@ -111,6 +113,11 @@
                 console.error('Error uploading files:', error);
             });
         }
+
+        if (datasetUploaded && fileUploaded){
+            fetchImages(1);
+        }
+
     }
 
     function test_ping(){
@@ -129,6 +136,8 @@
                 formData.append('files', file);
             }
 
+            datasetUploaded = true
+
             fetch(`/upload_dataset`, {
                 method: 'POST',
                 body: formData,
@@ -144,13 +153,18 @@
                 console.error('Error uploading dataset files:', error);
             });
         }
-
-        fetchImages(1);
+        
+        if (datasetUploaded && fileUploaded){
+            fetchImages(1);
+        }
+        
     }
 
     function forceload(){
         fetch('/force_load');
         displayUpload();
+        fileUploaded = true;
+        datasetUploaded - true;
         fetchImages(1);
     }
 
