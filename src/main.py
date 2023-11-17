@@ -20,7 +20,6 @@ img_data_dict = {}
 last_mode = None
 
 
-
 # Serve the HTML page
 @app.get("/", response_class=HTMLResponse)
 async def read_gallery(request: Request):
@@ -29,24 +28,20 @@ async def read_gallery(request: Request):
     return HTMLResponse(content=html_content, status_code=200)
 
 
-@app.get("/test_ping")
-async def ping():
-    print("Hello")
-    return {"Message":"Hello"}
 
 @app.get("/display_upload")
 async def display_upload():
 
     global current_directory
 
-    images_folder = "website/uploaded"
-    if os.path.exists(images_folder) and os.path.isdir(images_folder):
-            for filename in os.listdir(images_folder):
-                print("process_search :",filename)
+    upload_folder = "website/uploaded"
+    if os.path.exists(upload_folder) and os.path.isdir(upload_folder):
+            for filename in os.listdir(upload_folder):
                 if filename.endswith(('.jpg', '.jpeg', '.png', '.bmp')):
+                    #mount image to server
+                    app.mount("/uploaded", StaticFiles(directory=upload_folder), name="images")
                     web_path = f"/uploaded/{filename}"
             return {"image":web_path}
-
 
 
 @app.get("/get_images")
@@ -54,8 +49,6 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
     global img_data_dict
     global search_value
     global last_mode
-
-    #log_file.write("fetching images\n")
 
     process_search(mode)
     process_dataset(mode)
@@ -65,12 +58,15 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
     image_data = []
     images_folder = "dataset"
     count = 0
+    
     for filename in img_data_dict:
         image_url = f"/{images_folder}/{filename}"
         
         #log_file.write("fetching",image_url,"\n")
 
         count += 1
+        print(img_data_dict)
+        print(filename)
         print(img_data_dict[filename])
         value = cosineSimilarity(search_value,img_data_dict[filename]["value"])
         image_data.append({"url": image_url, "similarity": value})
@@ -105,28 +101,42 @@ async def forceLoad():
     get_images(1)
 
 @app.post("/upload_dataset")
-async def upload_dataset(files: List[UploadFile] = File(...)):
+async def upload_dataset(files: List[UploadFile] = File(...), delete_existing="FALSE"):
+    global img_data_dict
+    global last_mode
     dataset_folder = "website/dataset"
+
+    if delete_existing == "TRUE":
+        print("Deleting existing dataset")
+        # Delete existing images in the folder
+        for existing_file in os.listdir(dataset_folder):
+            file_path = os.path.join(dataset_folder, existing_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(f"Error deleting file {file_path}: {e}")
+
+        # Reset img_data_dict to an empty dictionary
+        img_data_dict = {}
+        # Last mode is set to none to induce recalculation
+        last_mode = None
 
     # Save the newly uploaded images
     for file in files:
-        # Add CBIR value to image
-        img_data_dict[file.filename] = None
-
         filename = os.path.join(dataset_folder, file.filename)
         with open(filename, "wb") as image_file:
             image_file.write(file.file.read())
 
     return {"filenames": [file.filename for file in files]}
-# Clear existing dataset images
 
-
+#works like a charm
 @app.post("/upload_search")
 async def upload_search(files: List[UploadFile] = File(...)):
     # Path to the "uploaded" folder
     upload_folder = "website/uploaded"
 
-    # Clear existing images in the folder
+    # Delete existing image in the folder
     for existing_file in os.listdir(upload_folder):
         file_path = os.path.join(upload_folder, existing_file)
         try:
@@ -138,16 +148,11 @@ async def upload_search(files: List[UploadFile] = File(...)):
     # Save the newly uploaded images
     for file in files:
 
-        
-
-        # Add CBIR value to image
-        img_data_dict[file.filename] = None
+        #img_data_dict[file.filename] = None
 
         filename = os.path.join(upload_folder, file.filename)
         with open(filename, "wb") as image_file:
             image_file.write(file.file.read())
-
-        app.mount("/uploaded", StaticFiles(directory=upload_folder), name="images")
 
     return {"filenames": [file.filename for file in files]}
 
@@ -170,15 +175,15 @@ def process_search(mode: str = "TEKSTUR"):
                     
                     #app.mount("/uploaded", StaticFiles(directory=images_folder), name="uploaded")
 
-                    if mode == "TEKSTUR" and (last_mode != "TEKSTUR" or not filename in img_data_dict):
+                    if mode == "TEKSTUR" and (last_mode != "TEKSTUR"):
                         value = cbt.process_texture(full_path)
                         search_value = value
-                        img_data_dict[filename] = {"value":value}
 
-                    elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
+                    elif mode == "WARNA" and (last_mode != "WARNA"):
                         value = cw.process_color(full_path)
                         search_value = value
-                        img_data_dict[filename] = {"value":value}
+                    else:
+                        print("bruh")
 
                     
 
@@ -219,6 +224,8 @@ def process_dataset(mode: str = "TEKSTUR"):
                     elif mode == "WARNA" and (last_mode != "WARNA" or not filename in img_data_dict):
                         value = cw.process_color(full_path)
                         img_data_dict[filename] = {"value":value}
+                    else:
+                        print("bruh")
 
                     
 
