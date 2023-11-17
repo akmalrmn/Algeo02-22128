@@ -3,7 +3,7 @@ let currentPage = 1;
 let fileUploaded = false;
 let datasetUploaded = false;
 let maxPage = 99;
-let deleteExisting = "TRUE";
+let deleteExisting = "FALSE";
 async function displayUpload() {
     const response = await fetch(`/display_upload`);
     const data = await response.json();
@@ -17,7 +17,8 @@ async function displayUpload() {
         imageContainer.appendChild(imgElement);
     }
 }
-async function swap_mode(){
+
+function swap_mode(){
     if (mode == "TEKSTUR"){
         mode = "WARNA";
     }
@@ -25,6 +26,18 @@ async function swap_mode(){
         mode = "TEKSTUR";
     }
 }
+
+function persistDataset(){
+    if (deleteExisting == "FALSE"){
+        deleteExisting = "TRUE";
+        console.log("Dataset is now deleted per upload");
+    }
+    else{
+        deleteExisting = "FALSE";
+        console.log("Dataset is now persistent");
+    }
+}
+
 async function fetchImages(page) {
     
     const imageContainer = document.getElementById('image-container');
