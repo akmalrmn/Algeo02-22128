@@ -12,6 +12,9 @@ import time
 
 current_directory = os.getcwd()
 
+# Create important folders
+os.makedirs("/website/uploaded", exist_ok=True)
+os.makedirs("/website/dataset", exist_ok=True)
 
 app = FastAPI()
 
@@ -35,6 +38,7 @@ async def display_upload():
     global current_directory
 
     upload_folder = "website/uploaded"
+
     if os.path.exists(upload_folder) and os.path.isdir(upload_folder):
             for filename in os.listdir(upload_folder):
                 if filename.endswith(('.jpg', '.jpeg', '.png', '.bmp')):
@@ -106,6 +110,9 @@ async def upload_dataset(files: List[UploadFile] = File(...), delete_existing="F
     global last_mode
     dataset_folder = "website/dataset"
 
+    if (not os.path.exists(dataset_folder)):
+        os.makedirs(dataset_folder,exist_ok=True)
+
     if delete_existing == "TRUE":
         print("Deleting existing dataset")
         # Delete existing images in the folder
@@ -135,6 +142,9 @@ async def upload_dataset(files: List[UploadFile] = File(...), delete_existing="F
 async def upload_search(files: List[UploadFile] = File(...)):
     # Path to the "uploaded" folder
     upload_folder = "website/uploaded"
+
+    if (not os.path.exists(upload_folder)):
+        os.makedirs(upload_folder,exist_ok=True)
 
     # Delete existing image in the folder
     for existing_file in os.listdir(upload_folder):
