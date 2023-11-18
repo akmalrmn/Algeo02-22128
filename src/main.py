@@ -22,6 +22,16 @@ app = FastAPI()
 img_data_dict = {}
 last_mode = None
 
+app = FastAPI()
+
+
+styles_path = "website/styles"
+# Mount the styles folder
+if os.path.exists("website/styles"):
+    app.mount("/styles", StaticFiles(directory="website/styles"), name="styles")
+    print("STYLES MOUNTED")
+else:
+    print("Styles folder not found")
 
 # Serve the HTML page
 @app.get("/", response_class=HTMLResponse)

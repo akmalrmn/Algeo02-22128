@@ -296,28 +296,24 @@ export default function Home() {
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full ">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 1</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Image Upload: Uploading an image is a simple task, requiring
+                just a few clicks.
               </p>
             </div>
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 2</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Color Search: Explore images that have similar color schemes to
+                your uploaded picture. Texture Search: Find images containing
+                textures and patterns resembling the one in your upload.
               </p>
             </div>
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full ">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 3</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Results: Our high-tech algorithm ranks search outcomes based on
+                visual similarity, allowing you to swiftly identify images
+                closely resembling your query from most to least similar.
               </p>
             </div>
           </div>
