@@ -36,37 +36,56 @@
         <button id="nextPageButton">Next Page</button>
     </div>
 
-    <script>
+    
+<script>
+    let mode = "TEKSTUR";
     let currentPage = 1;
     let fileUploaded = false;
     let datasetUploaded = false;
+    let maxPage = 99;
+    let deleteExisting = "TRUE";
 
     async function displayUpload() {
-    const response = await fetch(`/display_upload`);
-    const data = await response.json();
-
-    const imageContainer = document.getElementById('upload-image-container');
-    imageContainer.innerHTML = '';  // Clear existing images
-
-    if (data.image) {
-        const imgElement = document.createElement('img');
-        imgElement.src = data.image;
-        imgElement.style.maxWidth = '300px';
-        imgElement.style.margin = '10px';
-        imageContainer.appendChild(imgElement);
-    }
-}
-
-    async function fetchImages(page) {
-        const response = await fetch(`/get_images?page=${page}`);
+        const response = await fetch(`/display_upload`);
         const data = await response.json();
 
+        const imageContainer = document.getElementById('upload-image-container');
+        imageContainer.innerHTML = '';  // Clear existing images
+
+        if (data.image) {
+            const imgElement = document.createElement('img');
+            imgElement.src = data.image;
+            imgElement.style.maxWidth = '300px';
+            imgElement.style.margin = '10px';
+            imageContainer.appendChild(imgElement);
+        }
+    }
+
+
+    async function swap_mode(){
+        if (mode == "TEKSTUR"){
+            mode = "WARNA";
+        }
+        else if (mode == "WARNA"){
+            mode = "TEKSTUR";
+        }
+    }
+    async function fetchImages(page) {
+        
         const imageContainer = document.getElementById('image-container');
         imageContainer.innerHTML = '';  // Clear existing images
 
+        if (datasetUploaded && fileUploaded){
+
+        console.log("mode :",mode);
+        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
+        const data = await response.json();
+        
+
+        maxPage = data.max_page
         data.images.forEach(image => {
             const imgElement = document.createElement('img');
-            imgElement.src = image;
+            imgElement.src = image.url;
             imgElement.style.maxWidth = '300px';
             imgElement.style.margin = '10px';
             imageContainer.appendChild(imgElement);
@@ -75,6 +94,11 @@
         // Update the page indicator
         const pageIndicator = document.getElementById('pageIndicator');
         pageIndicator.textContent = `Page ${page}`;
+        }
+    }
+
+    function reset(){
+        fetch(`/reset`);
     }
 
     function uploadSearchImage() {
@@ -87,7 +111,7 @@
             for (const file of files) {
                 formData.append('files', file);
             }
-
+            fileUploaded = true
             fetch(`/upload_search`, {
                 method: 'POST',
                 body: formData,
@@ -102,6 +126,10 @@
                 console.error('Error uploading files:', error);
             });
         }
+
+        
+
+
     }
 
     function test_ping(){
@@ -110,6 +138,7 @@
     }
     
     function uploadDatasetImage() {
+        console.log("Trigger dataset upload");
         const fileInput = document.getElementById('datasetInput');
         const files = fileInput.files;
 
@@ -120,28 +149,33 @@
                 formData.append('files', file);
             }
 
-            fetch(`/upload_dataset`, {
+            fetch(`/upload_dataset?delete_existing=${deleteExisting}`, {
                 method: 'POST',
                 body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
+                .then(response => response.json())
+                .then(data => {
                     datasetUploaded = true;
                     console.log('Dataset uploaded:', data.filenames);
 
-                    //after uploading dataset, attempt to calculate images
-            })
-            .catch(error => {
-                console.error('Error uploading dataset files:', error);
-            });
+                    if (datasetUploaded && fileUploaded){
+                        fetchImages(1);
+                    }
+                    // after uploading dataset, attempt to calculate images
+                })
+                .catch(error => {
+                    console.error('Error uploading dataset files:', error);
+                });
         }
+        
 
-        fetchImages(1);
     }
 
     function forceload(){
         fetch('/force_load');
         displayUpload();
+        fileUploaded = true;
+        datasetUploaded = true;
         fetchImages(1);
     }
 
@@ -150,27 +184,35 @@
     const imageUploadButton = document.getElementById('uploadImageButton');
     const datasetUploadButton = document.getElementById('datasetImageButton');
 
+    /*
     imageUploadButton.addEventListener('click',() => {
-
+        uploadSearchImage();
     })
+    */
+    nextPageButton.addEventListener('click',() =>{
+        console.log("click");
+        if (currentPage < maxPage) {
+            console.log("clock");
+            currentPage++;
+            fetchImages(currentPage);
+            console.log(maxPage);
+        }
+        else{
+            console.log(currentPage);
+        }
+    });
 
-
-    prevPageButton.addEventListener('click', () => {
+    prevPageButton.addEventListener('click',() =>{
+        console.log("clack");
         if (currentPage > 1) {
+            console.log("clock");
             currentPage--;
             fetchImages(currentPage);
-            showButton();  // Show the button when navigating between pages
-        }
-        else {
-            fetchImages(currentPage);
         }
     });
 
-    nextPageButton.addEventListener('click', () => {
-        currentPage++;
-        fetchImages(currentPage);
-        showButton();  // Show the button when navigating between pages
-    });
+    window.onload = reset;
+
     </script>
 </body>
 </html>

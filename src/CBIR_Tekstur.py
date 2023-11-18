@@ -94,3 +94,6 @@ def process_texture(filepath: str) -> list[float]:
     homogeneity = Sigma(GLCM,Homogeneity)
     entropy = Sigma(GLCM, Entropy)
     return ([contrast, homogeneity, entropy])
+
+
+
