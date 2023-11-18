@@ -4,7 +4,7 @@
     background-color: white;
     gap: 20px;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 .Row{
@@ -17,9 +17,9 @@
 .step-text{
     font-size: 30px;
     margin-left: 30px;
-    margin-top: 5px ;
+    margin-top: 20px ;
 }
 
 .text{
-    margin-left: 30px;
+    margin-left: 60px;
 }

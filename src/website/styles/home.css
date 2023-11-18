@@ -7,24 +7,29 @@ h1 {
   color: black;
 }
 .home-container {
-  margin: 2% auto;
+  margin-top: 2%;
+  margin-left: auto;
+  margin-right: auto;  
   border: 2px solid black;
   width: 70%;
-  height: 60vh;
+  height: 50vh;
   display: flex;
   flex-direction: row;
   padding-left: 0;
   padding-right: 0;
 }
+
 .img-view {
-  width: 70%;
-  border-right: 2px solid black;
+  width: 80%;
+  border-left: 4px solid black;
   background-color: grey;
 }
+
 .img-input {
-  width: 50%;
+  width: 20%;
   padding: 2%;
 }
+
 .img-input p {
   margin-top: 10px;
 }
@@ -38,23 +43,91 @@ h1 {
 }
 
 .Search-button{
+  align-items: center;
     background-color: black;
     color: white;
     border-width: 1px;
-    height: 30px;
-    width: 125px;
+    height: 70px;
+    width: 200px;
     border:none;
-    border-radius: 18px;
+    border-radius: 40px;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 35px;
     cursor: pointer;
     transition: background-color 0.15s;
 }
 
 .Search-button:hover{
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15)  ; 
+    background-color: beige;
+    color: black;
 }
 
 .Search-button:active{
     opacity: 0.5;
+}
+
+.upload-dataset-button{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-width: 5px;
+  height: 35px;
+  width: 130px;
+  border:none;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.upload-dataset-button:hover{
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15)  ;
+  color: black;
+  background-color: beige; 
+}
+
+.upload-dataset-button:active{
+  opacity: 0.5;
+}
+
+
+
+.searchloc{
+  margin-top: 40px;
+  text-align: center;
+}
+
+.upload-image{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-width: 5px;
+  height: 35px;
+  width: 130px;
+  border:none;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.upload-image:hover{
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15)  ; 
+  background-color: beige;
+  color: black;
+}
+
+.upload-image:active{
+  opacity: 0.5;
 }
