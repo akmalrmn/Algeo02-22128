@@ -46,12 +46,19 @@
             <div class="color-texture">
               <button type="submit" class="upload-dataset-button" onclick="chooseDataset()">Upload Dataset</button>
             </div>
+
+            <button class="upload-image" type="button" onclick="swap_mode();">Swap Mode</button>
+            <b>Current mode: </b>
+            <b id="mode_text">TEKSTUR</b>
+            <button class="upload-image" type="button" onclick="persistDataset();">Keep Dataset</button>
+            <b>Keep existing dataset?: </b>
+            <b id="persistance_text">FALSE</b>
         </div>
         <div class="img-view" id="upload-image-container">
         </div>
       </div>
       <div class="searchloc">
-        <button type="submit" class="Search-button">Search</button>
+        <button type="submit" class="Search-button" onclick="forceload();">Search</button>
       </div>
     </div> <!-- Horizontal separator -->
     </section>
@@ -149,7 +156,10 @@ function swap_mode(){
     else if (mode == "WARNA"){
         mode = "TEKSTUR";
     }
+    modeText.innerText = mode;
 }
+
+const persistanceText = document.getElementById("persistance_text");
 
 function persistDataset(){
     if (deleteExisting == "FALSE"){
@@ -160,6 +170,7 @@ function persistDataset(){
         deleteExisting = "FALSE";
         console.log("Dataset is now persistent");
     }
+    persistanceText.innerText = deleteExisting;
 }
 
 async function fetchImages(page) {
@@ -174,14 +185,18 @@ async function fetchImages(page) {
     maxPage = data.max_page
     data.images.forEach(image => {
         const divElement = document.createElement('div');
+        divElement.classList.add('result-place');
 
         // Create an img element
         const imgElement = document.createElement('img');
         imgElement.src = image.url;
         imgElement.style.maxWidth = '300px';
         imgElement.style.margin = '10px';
+        imgElement.style.maxHeight = '35vh';
+        imgElement.style.height = 'auto';
 
         const textElement = document.createElement('b');
+        textElement.classList.add('result-text');
         textElement.textContent = `${(image.similarity*100).toFixed(2)}%`;
 
         // Append the img and text elements to the div
@@ -257,12 +272,16 @@ async function fetchImages(page) {
         }
 
     }
+
+    const modeText = document.getElementById('mode_text');
+
     function forceload(){
         fetch('/force_load');
         displayUpload();
         fileUploaded = true;
         datasetUploaded = true;
         fetchImages(1);
+        modeText.innerText = mode;
     }
     const prevPageButton = document.getElementById('prevPageButton');
     const nextPageButton = document.getElementById('nextPageButton');
