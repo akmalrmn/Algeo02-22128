@@ -1,113 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
-</head>
-<body>
-    <h1>Image Gallery</h1>
-    
-    <div id="upload-image-container"></div>
-    
-    <button id="test_button" onclick="forceload()"> TESTA </button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tubes Algeo</title>
 
-    <br>
-    <!-- File input button -->
-    <label for="fileInput" class="input-image-label">Choose Images</label>
-    <input type="file" id="fileInput" onchange="uploadSearchImage()" accept="image/*" style="display:none;">
+    <!--Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital@1&family=Roboto:ital,wght@0,400;1,500&display=swap"
+      rel="stylesheet"
+    />
 
-    <br>
-    <br>
-    <br>
+    <!-- css file -->
+    <link rel="stylesheet" href="styles/home.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="styles/result.css" />
+    <link rel="stylesheet" href="styles/header.css" />
+    <link rel="stylesheet" href="styles/how-to-use.css" />
+    <link rel="stylesheet" href="styles/about-us.css" />
+  </head>
+  <body>
+    <header class="header" id="header">
+      <div class="header-logo">
+        <h2>LOOGLE GENS</h2>
+      </div>
+      <div class="header-menu">
+        <a href="#home">Home</a>
+        <a href="#result">Result</a>
+        <a href="#how-to-use">How To Use</a>
+        <a href="#about-us">About Us</a>
+      </div>
+    </header>
+    <section class="home" id="home">
+      <h1>Reverse Image Search</h1>
+      <div class="home-container">
+        <div class="img-input">
+            <div style="height:0px;overflow:hidden">
+              <input type="file" id="fileInput" onchange="uploadSearchImage()" accept="image/*" style="display:none;">
+              <input type="file" id="datasetInput" onchange="uploadDatasetImage()" accept="image/*" multiple style="display:none;">
+            </div>
+            <button class="upload-image" type="button" onclick="chooseFile();">Upload Image</button>
+              
+            <div class="color-texture">
+              <button type="submit" class="upload-dataset-button" onclick="chooseDataset()">Upload Dataset</button>
+            </div>
+        </div>
+        <div class="img-view" id="upload-image-container">
+        </div>
+      </div>
+      <div class="searchloc">
+        <button type="submit" class="Search-button">Search</button>
+      </div>
+    </div> <!-- Horizontal separator -->
+    </section>
+    
 
-    <label for="datasetInput" class="input-dataset-label">Choose Dataset</label>
-    <input type="file" id="datasetInput" onchange="uploadDatasetImage()" accept="image/*" multiple style="display:none;">
-    
-    
-    
-    
-
-    <div id="image-container"></div>
-    
-    <div id="pagination-container">
+    <section class="result" id="result">
+      <p class="result-text"><h1>Result</h1></p>
+      <div class="grid-result", id="image-container">
+        <div class="result-place">result</div>
+        <div class="result-place">result</div>
+        <div class="result-place">result</div>
+        <div class="result-place">result</div>
+        <div class="result-place">result</div>
+        <div class="result-place">result</div>
+      </div>
+      <div id="pagination-container">
         <button id="prevPageButton">Previous Page</button>
         <span id="pageIndicator">Page 1</span>
         <button id="nextPageButton">Next Page</button>
-    </div>
+      </div>
+    </section>
 
-    
-<script>
+    <section class="how-to-use" id="how-to-use">
+      <h1>How To Use</h1>
+      <div class="how-to-use-column">
+        <div class="Row">
+          <p class="step-text">Step 1</p>
+          <p class="text">dvzx</p>
+        </div>
+        <div class="Row">
+          <p class="step-text">Step 2</p>
+          <p class="text">dvzx</p>
+        </div>
+        <div class="Row">
+          <p class="step-text">Step 3</p>
+          <p class="text">dvzx</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-us" id="about-us">
+      <h1>About Us</h1>
+      <div class="grid-about-us">
+        <div class="about-us-place">
+          <img src="styles/profilepic/andhika.jpeg" />
+          <p class="name">Mohammad Andhika Fadillah</p>
+          <p class="nim">13522128</p>
+        </div>
+        <div class="about-us-place">
+          <img src="styles/profilepic/akmal.jpeg" />
+          <p class="name">Mohammad Akmal Ramadan</p>
+          <p class="nim">13522161</p>
+        </div>
+        <div class="about-us-place">
+          <img src="styles/profilepic/justin.jpeg" />
+          <p class="name">Justin Aditya Putra Prabakti</p>
+          <p class="nim">13522130</p>
+        </div>
+      </div>
+    </section>
+
+  <!--SCRIPT_PLACEHOLDER-->
+  <script>
+
+    function chooseFile() {
+      document.getElementById("fileInput").click();
+    }
+    function chooseDataset() {
+      document.getElementById("datasetInput").click();
+    }
     let mode = "TEKSTUR";
-    let currentPage = 1;
-    let fileUploaded = false;
-    let datasetUploaded = false;
-    let maxPage = 99;
-    let deleteExisting = "TRUE";
-
-    async function displayUpload() {
-        const response = await fetch(`/display_upload`);
-        const data = await response.json();
-
-        const imageContainer = document.getElementById('upload-image-container');
-        imageContainer.innerHTML = '';  // Clear existing images
-
-        if (data.image) {
-            const imgElement = document.createElement('img');
-            imgElement.src = data.image;
-            imgElement.style.maxWidth = '300px';
-            imgElement.style.margin = '10px';
-            imageContainer.appendChild(imgElement);
-        }
+let currentPage = 1;
+let fileUploaded = false;
+let datasetUploaded = false;
+let maxPage = 99;
+let deleteExisting = "FALSE";
+async function displayUpload() {
+    const response = await fetch(`/display_upload`);
+    const data = await response.json();
+    const imageContainer = document.getElementById('upload-image-container');
+    imageContainer.innerHTML = '';  // Clear existing images
+    if (data.image) {
+        const imgElement = document.createElement('img');
+        imgElement.src = data.image;
+        imgElement.style.height = '100%';
+        imgElement.style.margin = '10px';
+        imageContainer.appendChild(imgElement);
     }
+}
 
-
-    async function swap_mode(){
-        if (mode == "TEKSTUR"){
-            mode = "WARNA";
-        }
-        else if (mode == "WARNA"){
-            mode = "TEKSTUR";
-        }
+function swap_mode(){
+    if (mode == "TEKSTUR"){
+        mode = "WARNA";
     }
-    async function fetchImages(page) {
-        
-        const imageContainer = document.getElementById('image-container');
-        imageContainer.innerHTML = '';  // Clear existing images
-
-        if (datasetUploaded && fileUploaded){
-
-        console.log("mode :",mode);
-        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
-        const data = await response.json();
-        
-
-        maxPage = data.max_page
-        data.images.forEach(image => {
-            const imgElement = document.createElement('img');
-            imgElement.src = image.url;
-            imgElement.style.maxWidth = '300px';
-            imgElement.style.margin = '10px';
-            imageContainer.appendChild(imgElement);
-        });
-
-        // Update the page indicator
-        const pageIndicator = document.getElementById('pageIndicator');
-        pageIndicator.textContent = `Page ${page}`;
-        }
+    else if (mode == "WARNA"){
+        mode = "TEKSTUR";
     }
+}
 
+function persistDataset(){
+    if (deleteExisting == "FALSE"){
+        deleteExisting = "TRUE";
+        console.log("Dataset is now deleted per upload");
+    }
+    else{
+        deleteExisting = "FALSE";
+        console.log("Dataset is now persistent");
+    }
+}
+
+async function fetchImages(page) {
+    
+    const imageContainer = document.getElementById('image-container');
+    imageContainer.innerHTML = '';  // Clear existing images
+    if (datasetUploaded && fileUploaded){
+    console.log("mode :",mode);
+    const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
+    const data = await response.json();
+    
+    maxPage = data.max_page
+    data.images.forEach(image => {
+        const divElement = document.createElement('div');
+
+        // Create an img element
+        const imgElement = document.createElement('img');
+        imgElement.src = image.url;
+        imgElement.style.maxWidth = '300px';
+        imgElement.style.margin = '10px';
+
+        const textElement = document.createElement('b');
+        textElement.textContent = `${(image.similarity*100).toFixed(2)}%`;
+
+        // Append the img and text elements to the div
+        divElement.appendChild(imgElement);
+        divElement.appendChild(textElement);
+
+        // Append the div to the imageContainer
+        imageContainer.appendChild(divElement);
+    });
+    // Update the page indicator
+    const pageIndicator = document.getElementById('pageIndicator');
+    pageIndicator.textContent = `Page ${page}`;
+    }
+    }
     function reset(){
         fetch(`/reset`);
     }
-
     function uploadSearchImage() {
         const fileInput = document.getElementById('fileInput');
         const files = fileInput.files;
-
         if (files.length > 0) {
             const formData = new FormData();
-
             for (const file of files) {
                 formData.append('files', file);
             }
@@ -127,28 +223,21 @@
             });
         }
 
-        
-
-
     }
-
     function test_ping(){
         fetch(`/test_ping`);
         console.log("Ping");
     }
-    
+
     function uploadDatasetImage() {
         console.log("Trigger dataset upload");
         const fileInput = document.getElementById('datasetInput');
         const files = fileInput.files;
-
         if (files.length > 0) {
             const formData = new FormData();
-
             for (const file of files) {
                 formData.append('files', file);
             }
-
             fetch(`/upload_dataset?delete_existing=${deleteExisting}`, {
                 method: 'POST',
                 body: formData,
@@ -157,7 +246,6 @@
                 .then(data => {
                     datasetUploaded = true;
                     console.log('Dataset uploaded:', data.filenames);
-
                     if (datasetUploaded && fileUploaded){
                         fetchImages(1);
                     }
@@ -167,10 +255,8 @@
                     console.error('Error uploading dataset files:', error);
                 });
         }
-        
 
     }
-
     function forceload(){
         fetch('/force_load');
         displayUpload();
@@ -178,12 +264,10 @@
         datasetUploaded = true;
         fetchImages(1);
     }
-
     const prevPageButton = document.getElementById('prevPageButton');
     const nextPageButton = document.getElementById('nextPageButton');
     const imageUploadButton = document.getElementById('uploadImageButton');
     const datasetUploadButton = document.getElementById('datasetImageButton');
-
     /*
     imageUploadButton.addEventListener('click',() => {
         uploadSearchImage();
@@ -201,7 +285,6 @@
             console.log(currentPage);
         }
     });
-
     prevPageButton.addEventListener('click',() =>{
         console.log("clack");
         if (currentPage > 1) {
@@ -210,9 +293,8 @@
             fetchImages(currentPage);
         }
     });
-
     window.onload = reset;
-
-    </script>
-</body>
+    
+  </script>
+  </body>
 </html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+    
+    <div id="upload-image-container"></div>
+    
+    <button id="test_button" onclick="forceload()"> TESTA </button>
+
+    <br>
+    <!-- File input button -->
+    <label for="fileInput" class="input-image-label">Choose Images</label>
+    <input type="file" id="fileInput" onchange="uploadSearchImage()" accept="image/*" style="display:none;">
+
+    <br>
+    <br>
+    <br>
+
+    <label for="datasetInput" class="input-dataset-label">Choose Dataset</label>
+    <input type="file" id="datasetInput" onchange="uploadDatasetImage()" accept="image/*" multiple style="display:none;">
+    
+    
+    
+    
+
+    <div id="image-container"></div>
+    
+    <div id="pagination-container">
+        <button id="prevPageButton">Previous Page</button>
+        <span id="pageIndicator">Page 1</span>
+        <button id="nextPageButton">Next Page</button>
+    </div>
+
+    
+<script>
+    let mode = "TEKSTUR";
+    let currentPage = 1;
+    let fileUploaded = false;
+    let datasetUploaded = false;
+    let maxPage = 99;
+    let deleteExisting = "TRUE";
+
+    async function displayUpload() {
+        const response = await fetch(`/display_upload`);
+        const data = await response.json();
+
+        const imageContainer = document.getElementById('upload-image-container');
+        imageContainer.innerHTML = '';  // Clear existing images
+
+        if (data.image) {
+            const imgElement = document.createElement('img');
+            imgElement.src = data.image;
+            imgElement.style.maxWidth = '300px';
+            imgElement.style.margin = '10px';
+            imageContainer.appendChild(imgElement);
+        }
+    }
+
+
+    async function swap_mode(){
+        if (mode == "TEKSTUR"){
+            mode = "WARNA";
+        }
+        else if (mode == "WARNA"){
+            mode = "TEKSTUR";
+        }
+    }
+    async function fetchImages(page) {
+        
+        const imageContainer = document.getElementById('image-container');
+        imageContainer.innerHTML = '';  // Clear existing images
+
+        if (datasetUploaded && fileUploaded){
+
+        console.log("mode :",mode);
+        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
+        const data = await response.json();
+        
+
+        maxPage = data.max_page
+        data.images.forEach(image => {
+        const divElement = document.createElement('div');
+
+        // Create an img element
+        const imgElement = document.createElement('img');
+        imgElement.src = image.url;
+        imgElement.style.maxWidth = '300px';
+        imgElement.style.margin = '10px';
+
+        const textElement = document.createElement('b');
+        textElement.textContent = `${(image.similarity*100).toFixed(3)}%`;
+
+        // Append the img and text elements to the div
+        divElement.appendChild(imgElement);
+        divElement.appendChild(textElement);
+
+        // Append the div to the imageContainer
+        imageContainer.appendChild(divElement);
+        });
+
+        // Update the page indicator
+        const pageIndicator = document.getElementById('pageIndicator');
+        pageIndicator.textContent = `Page ${page}`;
+        }
+    }
+
+    function reset(){
+        fetch(`/reset`);
+    }
+
+    function uploadSearchImage() {
+        const fileInput = document.getElementById('fileInput');
+        const files = fileInput.files;
+
+        if (files.length > 0) {
+            const formData = new FormData();
+
+            for (const file of files) {
+                formData.append('files', file);
+            }
+            fileUploaded = true
+            fetch(`/upload_search`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                    fileUploaded = true;
+                    displayUpload();
+                    console.log('Search file uploaded:', data.filenames);
+            })
+            .catch(error => {
+                console.error('Error uploading files:', error);
+            });
+        }
+
+        
+
+
+    }
+
+    function test_ping(){
+        fetch(`/test_ping`);
+        console.log("Ping");
+    }
+    
+    function uploadDatasetImage() {
+        console.log("Trigger dataset upload");
+        const fileInput = document.getElementById('datasetInput');
+        const files = fileInput.files;
+
+        if (files.length > 0) {
+            const formData = new FormData();
+
+            for (const file of files) {
+                formData.append('files', file);
+            }
+
+            fetch(`/upload_dataset?delete_existing=${deleteExisting}`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    datasetUploaded = true;
+                    console.log('Dataset uploaded:', data.filenames);
+
+                    if (datasetUploaded && fileUploaded){
+                        fetchImages(1);
+                    }
+                    // after uploading dataset, attempt to calculate images
+                })
+                .catch(error => {
+                    console.error('Error uploading dataset files:', error);
+                });
+        }
+        
+
+    }
+
+    function forceload(){
+        fetch('/force_load');
+        displayUpload();
+        fileUploaded = true;
+        datasetUploaded = true;
+        fetchImages(1);
+    }
+
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+    const imageUploadButton = document.getElementById('uploadImageButton');
+    const datasetUploadButton = document.getElementById('datasetImageButton');
+
+    /*
+    imageUploadButton.addEventListener('click',() => {
+        uploadSearchImage();
+    })
+    */
+    nextPageButton.addEventListener('click',() =>{
+        console.log("click");
+        if (currentPage < maxPage) {
+            console.log("clock");
+            currentPage++;
+            fetchImages(currentPage);
+            console.log(maxPage);
+        }
+        else{
+            console.log(currentPage);
+        }
+    });
+
+    prevPageButton.addEventListener('click',() =>{
+        console.log("clack");
+        if (currentPage > 1) {
+            console.log("clock");
+            currentPage--;
+            fetchImages(currentPage);
+        }
+    });
+
+    window.onload = reset;
+
+    </script>
+</body>
+</html>
