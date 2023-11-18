@@ -201,7 +201,10 @@ export default function Home() {
 };
 
   return (
-    <main id="home" className="bg-white w-full text-black flex flex-col items-center">
+    <main
+      id="home"
+      className="bg-white w-full text-black flex flex-col items-center"
+    >
       <Navbar />
       <div className="mt-[100px] flex flex-col items-center gap-y-8 w-full">
         <h1 className="text-5xl text-[black] font-bold">
@@ -256,28 +259,24 @@ export default function Home() {
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full ">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 1</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Image Upload: Uploading an image is a simple task, requiring
+                just a few clicks.
               </p>
             </div>
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 2</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Color Search: Explore images that have similar color schemes to
+                your uploaded picture. Texture Search: Find images containing
+                textures and patterns resembling the one in your upload.
               </p>
             </div>
             <div className="bg-[beige] text-black  px-3 py-3 w-[800px] rounded-full ">
               <h3 className="mx-12 my-2 text-2xl font-bold">Step 3</h3>
               <p className="mx-14 my-2">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo
-                at expedita corrupti maxime? Voluptatem omnis maxime quod
-                consequatur molestiae rerum aperiam sint iste, ratione, quaerat
-                repellat necessitatibus alias, minima velit!
+                Results: Our high-tech algorithm ranks search outcomes based on
+                visual similarity, allowing you to swiftly identify images
+                closely resembling your query from most to least similar.
               </p>
             </div>
           </div>
@@ -287,40 +286,39 @@ export default function Home() {
             About Us
           </h3>
           <div className="columns-3  gap-20 mt-10">
-          <div
+            <div
+              style={{
+                border: "4px solid black",
+                overflow: "hidden",
+                position: "relative",
+                width: "300px", // Adjust width as needed
+                height: "420px", // Adjust height as needed
+                display: "inline-block", // Ensures inline block display
+                borderRadius: "20px",
+              }}
+            >
+              <Image
+                src={andhikaimage}
+                alt="akmal"
+                height={400}
+                width={300}
+                className="rounded-xl"
+              />
+              <div
                 style={{
-                  border: "4px solid black",
-                  overflow: "hidden",
-                  position: "relative",
-                  width: "300px", // Adjust width as needed
-                  height: "420px", // Adjust height as needed
-                  display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  position: "absolute",
+                  bottom: "0",
+                  left: "0",
+                  width: "100%",
+                  color: "black",
+                  textAlign: "center",
+                  padding: "8px",
                 }}
               >
-                <Image
-                  src={andhikaimage}
-                  alt="akmal"
-                  height={400}
-                  width={300}
-                  className="rounded-xl"
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "0",
-                    left: "0",
-                    width: "100%",
-                    color: "black",
-                    textAlign: "center",
-                    padding: "8px",
-                    
-                  }}
-                >
-                  <p className="text-xl">Mohammad Andhika Fadillah</p>
-                  <p className="text-xl">13522128</p>
-                </div>
+                <p className="text-xl">Mohammad Andhika Fadillah</p>
+                <p className="text-xl">13522128</p>
               </div>
+            </div>
             <div style={{ position: "relative" }}>
               <div
                 style={{
@@ -330,7 +328,7 @@ export default function Home() {
                   width: "300px", // Adjust width as needed
                   height: "420px", // Adjust height as needed
                   display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  borderRadius: "20px",
                 }}
               >
                 <Image
@@ -349,7 +347,6 @@ export default function Home() {
                     color: "black",
                     textAlign: "center",
                     padding: "8px",
-                    
                   }}
                 >
                   <p className="text-xl">Mohammad Akmal Ramadan</p>
@@ -366,7 +363,7 @@ export default function Home() {
                   width: "300px", // Adjust width as needed
                   height: "420px", // Adjust height as needed
                   display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  borderRadius: "20px",
                 }}
               >
                 <Image
