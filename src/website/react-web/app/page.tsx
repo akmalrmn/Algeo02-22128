@@ -188,8 +188,17 @@ export default function Home() {
   };
 
   const inputImageHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-    // Implement inputImageHandler to handle image input change event
-  };
+  if (e.target.files && e.target.files.length > 0) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setDisplayedImage(String(reader.result)); // Update displayedImage state with new image URL
+    };
+
+    reader.readAsDataURL(file); // Read the uploaded file as a data URL
+  }
+};
 
   return (
     <main id="home" className="bg-white w-full text-black flex flex-col items-center">
