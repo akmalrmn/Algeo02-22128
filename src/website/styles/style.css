@@ -1,15 +1,26 @@
+@font-face {
+  font-family: 'GoogleFont';
+  src: url('../ProductSans-Regular.ttf');
+}
+
+
 * {
   padding: 0;
   margin: 0;
+  font-family: 'GoogleFont';
 }
 section {
   height: 75vh;
   padding: 100px 5% 100px;
 }
 p {
-  font-family: Roboto;
+  font-family: 'GoogleFont';
 }
 
 h1 {
   font-size: 40px;
+}
+
+html{
+  scroll-behavior: smooth;
 }

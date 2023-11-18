@@ -1,13 +1,14 @@
 .about-us {
   background-color: beige;
-  padding-top: 30px;
+  padding-top: 60px;
+  padding-bottom: 120px;
 }
 
 section.about-us {
   height: 70vh;
 }
 .grid-about-us {
-  margin-top: 20px;
+  margin-top: 50px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   column-gap: 20px;
@@ -16,7 +17,8 @@ section.about-us {
 }
 
 .about-us-place {
-  background-color:white;
+  border: 2px solid black;
+  text-align: center;
   height: 400px;
 }
 .about-us-place img {
