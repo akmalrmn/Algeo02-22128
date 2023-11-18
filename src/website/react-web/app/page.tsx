@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState, useRef, useEffect, ChangeEvent } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  ChangeEvent,
+  useCallback,
+} from "react";
+import { useDropzone } from "react-dropzone";
 import Navbar from "./components/Navbar";
 import Image, { StaticImageData } from "next/image";
 import placeholder from "@/public/placeholder.jpg";
@@ -22,6 +29,8 @@ export default function Home() {
   const [datasetUploaded, setDatasetUploaded] = useState(false);
   const [maxPage, setMaxPage] = useState(99);
   const [deleteExisting, setDeleteExisting] = useState("FALSE");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const folderInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (isReset) {
@@ -174,6 +183,12 @@ export default function Home() {
     }
   };
 
+  const dropzoneStyles = {
+    border: "2px dashed #000",
+    padding: "20px",
+    textAlign: "center",
+  };
+
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -188,21 +203,25 @@ export default function Home() {
   };
 
   const inputImageHandler = async (e: ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files && e.target.files.length > 0) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
 
-    reader.onloadend = () => {
-      setDisplayedImage(String(reader.result)); // Update displayedImage state with new image URL
-    };
+      reader.onloadend = () => {
+        setDisplayedImage(String(reader.result)); // Update displayedImage state with new image URL
+      };
 
-    reader.readAsDataURL(file); // Read the uploaded file as a data URL
-  }
-};
+      reader.readAsDataURL(file); // Read the uploaded file as a data URL
+    }
+  };
 
   return (
-    <main id="home" className="bg-white w-full text-black flex flex-col items-center">
+    <main
+      id="home"
+      className="bg-white w-full text-black flex flex-col items-center"
+    >
       <Navbar />
+
       <div className="mt-[100px] flex flex-col items-center gap-y-8 w-full">
         <h1 className="text-5xl text-[black] font-bold">
           Reverse Image Search
@@ -211,7 +230,11 @@ export default function Home() {
           <div className="flex flex-col gap-y-16 items-start">
             <button
               className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-[beige] hover:text-black hover:shadow-xl transition-all"
-              onClick={imageHandler}
+              onClick={() => {
+                if (imageInputRef.current) {
+                  imageInputRef.current.click();
+                }
+              }}
             >
               Upload Image
             </button>
@@ -219,13 +242,30 @@ export default function Home() {
               <input
                 id="picture"
                 type="file"
-                ref={fileInputRef}
+                ref={imageInputRef}
                 onChange={inputImageHandler}
               />
             </div>
-            <button className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-[beige] hover:text-black hover:shadow-xl transition-all">
-              Upload Dataset
-            </button>
+            <div>
+              <button
+                className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-[beige] hover:text-black hover:shadow-xl transition-all"
+                onClick={() => {
+                  if (folderInputRef.current) {
+                    folderInputRef.current.click();
+                  }
+                }}
+              >
+                Upload Dataset
+              </button>
+              <input
+                type="file"
+                ref={folderInputRef}
+                style={{ display: "none" }}
+                multiple
+                webkitdirectory=""
+                directory=""
+              />
+            </div>
           </div>
           <div className="h-[400px] w-[400px] overflow-hidden">
             <Image
@@ -287,40 +327,39 @@ export default function Home() {
             About Us
           </h3>
           <div className="columns-3  gap-20 mt-10">
-          <div
+            <div
+              style={{
+                border: "4px solid black",
+                overflow: "hidden",
+                position: "relative",
+                width: "300px", // Adjust width as needed
+                height: "420px", // Adjust height as needed
+                display: "inline-block", // Ensures inline block display
+                borderRadius: "20px",
+              }}
+            >
+              <Image
+                src={andhikaimage}
+                alt="akmal"
+                height={400}
+                width={300}
+                className="rounded-xl"
+              />
+              <div
                 style={{
-                  border: "4px solid black",
-                  overflow: "hidden",
-                  position: "relative",
-                  width: "300px", // Adjust width as needed
-                  height: "420px", // Adjust height as needed
-                  display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  position: "absolute",
+                  bottom: "0",
+                  left: "0",
+                  width: "100%",
+                  color: "black",
+                  textAlign: "center",
+                  padding: "8px",
                 }}
               >
-                <Image
-                  src={andhikaimage}
-                  alt="akmal"
-                  height={400}
-                  width={300}
-                  className="rounded-xl"
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "0",
-                    left: "0",
-                    width: "100%",
-                    color: "black",
-                    textAlign: "center",
-                    padding: "8px",
-                    
-                  }}
-                >
-                  <p className="text-xl">Mohammad Andhika Fadillah</p>
-                  <p className="text-xl">13522128</p>
-                </div>
+                <p className="text-xl">Mohammad Andhika Fadillah</p>
+                <p className="text-xl">13522128</p>
               </div>
+            </div>
             <div style={{ position: "relative" }}>
               <div
                 style={{
@@ -330,7 +369,7 @@ export default function Home() {
                   width: "300px", // Adjust width as needed
                   height: "420px", // Adjust height as needed
                   display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  borderRadius: "20px",
                 }}
               >
                 <Image
@@ -349,7 +388,6 @@ export default function Home() {
                     color: "black",
                     textAlign: "center",
                     padding: "8px",
-                    
                   }}
                 >
                   <p className="text-xl">Mohammad Akmal Ramadan</p>
@@ -366,7 +404,7 @@ export default function Home() {
                   width: "300px", // Adjust width as needed
                   height: "420px", // Adjust height as needed
                   display: "inline-block", // Ensures inline block display
-                  borderRadius: "20px"
+                  borderRadius: "20px",
                 }}
               >
                 <Image
