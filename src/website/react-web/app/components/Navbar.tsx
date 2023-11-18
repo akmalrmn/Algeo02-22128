@@ -4,7 +4,7 @@ import { Link as ScrollLink } from "react-scroll";
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-0 w-full h-16 bg-black text-white px-8 flex justify-between items-center">
+    <nav className="fixed top-0 w-full h-16 bg-black text-white px-8 flex justify-between items-center z-50">
       <h3 className="text-2xl font-bold text-[beige]">LOOGLE GENS</h3>
       <div className="flex gap-x-16 mr-6">
         <ScrollLink

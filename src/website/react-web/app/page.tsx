@@ -6,7 +6,9 @@ import React, {
   useEffect,
   ChangeEvent,
   useCallback,
+  Component,
 } from "react";
+import Switch from "react-switch";
 import { useDropzone } from "react-dropzone";
 import Navbar from "./components/Navbar";
 import Image, { StaticImageData } from "next/image";
@@ -16,6 +18,7 @@ import andhika from "@/public/profilepic/andhika.jpeg";
 import justin from "@/public/profilepic/justin.jpeg";
 
 export default function Home() {
+  const [maxPage, setMaxPage] = useState(99);
   const [displayedImage, setDisplayedImage] =
     useState<StaticImageData>(placeholder);
   const [andhikaimage] = useState<StaticImageData>(andhika);
@@ -23,11 +26,10 @@ export default function Home() {
   const [justinimage] = useState<StaticImageData>(justin);
   const [isReset, setIsReset] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [mode, setMode] = useState("TEKSTUR");
+  const [mode, setMode] = useState("Color");
   const [currentPage, setCurrentPage] = useState(1);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [datasetUploaded, setDatasetUploaded] = useState(false);
-  const [maxPage, setMaxPage] = useState(99);
   const [deleteExisting, setDeleteExisting] = useState("FALSE");
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const folderInputRef = useRef<HTMLInputElement | null>(null);
@@ -65,7 +67,7 @@ export default function Home() {
   }
 
   function swap_mode() {
-    setMode((prevMode) => (prevMode === "TEKSTUR" ? "WARNA" : "TEKSTUR"));
+    setMode((prevMode) => (prevMode === "Texture" ? "Color" : "Texture"));
   }
 
   function persistDataset() {
@@ -74,29 +76,34 @@ export default function Home() {
     );
   }
 
-  async function fetchImages(page: number) {
+  async function fetchImages(page) {
     const imageContainer = document.getElementById("image-container");
     const pageIndicator = document.getElementById("pageIndicator");
 
     if (imageContainer && pageIndicator && datasetUploaded && fileUploaded) {
       imageContainer.innerHTML = ""; // Clear existing images
       console.log("mode :", mode);
-      const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
-      const data = await response.json();
 
-      setMaxPage(data.max_page); // Update maxPage using setMaxPage
+      try {
+        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
+        const data = await response.json();
 
-      data.images.forEach((image: { url: string }) => {
-        // Define type for 'image' or use more precise type
-        const imgElement = document.createElement("img");
-        imgElement.src = image.url;
-        imgElement.style.maxWidth = "300px";
-        imgElement.style.margin = "10px";
-        imageContainer.appendChild(imgElement);
-      });
+        // Update maxPage using setMaxPage
+        setMaxPage(data.max_page);
 
-      // Update the page indicator text content
-      pageIndicator.textContent = `Page ${page}`;
+        data.images.forEach((image) => {
+          const imgElement = document.createElement("img");
+          imgElement.src = image.url;
+          imgElement.style.maxWidth = "300px";
+          imgElement.style.margin = "10px";
+          imageContainer.appendChild(imgElement);
+        });
+
+        // Update the page indicator text content
+        pageIndicator.textContent = `Page ${page}`;
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
     }
   }
 
@@ -120,10 +127,26 @@ export default function Home() {
           setFileUploaded(true); // Update fileUploaded state
           displayUpload();
           console.log("Search file uploaded:", data.filenames);
+
+          // Read the uploaded image and update displayedImage state
+          const uploadedImage = fileInput.files[0];
+          const reader = new FileReader();
+
+          reader.onloadend = () => {
+            setDisplayedImage(reader.result as string); // Update displayedImage state with the uploaded image URL
+          };
+
+          reader.readAsDataURL(uploadedImage); // Read the uploaded file as a data URL
         })
         .catch((error) => {
           console.error("Error uploading files:", error);
         });
+    }
+  }
+
+  function triggerImageUpload() {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
     }
   }
 
@@ -163,18 +186,90 @@ export default function Home() {
     }
   }
 
-  function forceload() {
-    fetch("/force_load")
-      .then(() => {
-        displayUpload();
-        setFileUploaded(true); // Update fileUploaded state
-        setDatasetUploaded(true); // Update datasetUploaded state
-        fetchImages(1);
-      })
-      .catch((error) => {
-        console.error("Error during force load:", error);
-      });
+  const forceload = async () => {
+    try {
+      await fetch("/force_load");
+      await displayUpload();
+      setFileUploaded(true);
+      setDatasetUploaded(true);
+      fetchImages(1);
+      modeText.innerText = mode;
+    } catch (error) {
+      console.error("Error during force load:", error);
+    }
+  };
+
+  const modeText = document.getElementById("mode_text");
+
+  async function displayUpload() {
+    const response = await fetch(`/display_upload`);
+    const data = await response.json();
+    const imageContainer = document.getElementById("upload-image-container");
+    imageContainer.innerHTML = ""; // Clear existing images
+    if (data.image) {
+      const imgElement = document.createElement("img");
+      imgElement.src = data.image;
+      imgElement.style.height = "100%";
+      imgElement.style.margin = "10px";
+      imageContainer.appendChild(imgElement);
+    }
   }
+
+  async function fetchImages(page) {
+    const imageContainer = document.getElementById("image-container");
+    imageContainer.innerHTML = ""; // Clear existing images
+
+    if (datasetUploaded && fileUploaded) {
+      console.log("mode :", mode);
+      try {
+        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
+        const data = await response.json();
+
+        setMaxPage(data.max_page); // Update maxPage state
+
+        data.images.forEach((image) => {
+          const divElement = document.createElement("div");
+          divElement.classList.add("result-place");
+
+          // Create an img element
+          const imgElement = document.createElement("img");
+          imgElement.src = image.url;
+          imgElement.style.maxWidth = "300px";
+          imgElement.style.margin = "10px";
+          imgElement.style.maxHeight = "35vh";
+          imgElement.style.height = "auto";
+
+          const textElement = document.createElement("b");
+          textElement.classList.add("result-text");
+          textElement.textContent = `${(image.similarity * 100).toFixed(2)}%`;
+
+          // Append the img and text elements to the div
+          divElement.appendChild(imgElement);
+          divElement.appendChild(textElement);
+
+          // Append the div to the imageContainer
+          imageContainer.appendChild(divElement);
+        });
+
+        // Update the page indicator
+        const pageIndicator = document.getElementById("pageIndicator");
+        pageIndicator.textContent = `Page ${page}`;
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+    }
+  }
+
+  const handleCheckboxChange = () => {
+    const updatedDeleteExisting = deleteExisting === "FALSE" ? "TRUE" : "FALSE";
+    setDeleteExisting(updatedDeleteExisting);
+
+    if (updatedDeleteExisting === "FALSE") {
+      console.log("Dataset is now persistent");
+    } else {
+      console.log("Dataset is now deleted per upload");
+    }
+  };
 
   const handleNextPage = () => {
     if (currentPage < maxPage) {
@@ -183,10 +278,9 @@ export default function Home() {
     }
   };
 
-  const dropzoneStyles = {
-    border: "2px dashed #000",
-    padding: "20px",
-    textAlign: "center",
+  const handleModeChange = (checked) => {
+    setMode(checked); // Update the mode state based on the toggle
+    // You can add other logic here based on the mode change
   };
 
   const handlePrevPage = () => {
@@ -199,6 +293,46 @@ export default function Home() {
   const imageHandler = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const handleFolderUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const folder = e.target.files[0];
+
+      const formData = new FormData();
+      formData.append("files", folder);
+
+      try {
+        const response = await fetch(
+          `/upload_dataset?delete_existing=${deleteExisting}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Dataset uploaded:", data.filenames);
+
+          // Additional logic after successful dataset upload
+          setDatasetUploaded(true); // Update datasetUploaded state
+          if (datasetUploaded && fileUploaded) {
+            fetchImages(1); // Fetch images if both dataset and file are uploaded
+          }
+          // Add more logic here if needed after dataset upload
+          // For example:
+          // - Redirect to another page
+          // - Show a success message to the user
+        } else {
+          throw new Error("Failed to upload dataset");
+        }
+      } catch (error) {
+        console.error("Error uploading dataset files:", error);
+        // Handle error scenarios if needed
+        // For example, display an error message to the user
+      }
     }
   };
 
@@ -228,6 +362,23 @@ export default function Home() {
         </h1>
         <div className="h-[450px] w-[70%] border-2 border-black rounded-xl p-8 flex items-center justify-between gap-x-8">
           <div className="flex flex-col gap-y-16 items-start">
+            <div>
+              <h3>Choose Your CBIR Method!</h3>
+              <Switch
+                onChange={swap_mode} // Use the swap_mode function as the onChange handler
+                checked={mode === "Texture"} // Set the checked state based on the mode
+                checkedIcon={false} // Customize the icons if needed
+                uncheckedIcon={false}
+                onColor="#bbbbbb" // Example colors
+                offColor="#86d3ff"
+                onHandleColor="#cccccc"
+                offHandleColor="#2693e6"
+                height={28}
+                width={56}
+              />
+              {/* You can display other content based on the mode here */}
+              <p>Current Method: {mode}</p>
+            </div>
             <button
               className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-[beige] hover:text-black hover:shadow-xl transition-all"
               onClick={() => {
@@ -243,7 +394,10 @@ export default function Home() {
                 id="picture"
                 type="file"
                 ref={imageInputRef}
-                onChange={inputImageHandler}
+                onChange={(e) => {
+                  inputImageHandler(e);
+                  uploadSearchImage();
+                }}
               />
             </div>
             <div>
@@ -261,10 +415,24 @@ export default function Home() {
                 type="file"
                 ref={folderInputRef}
                 style={{ display: "none" }}
-                multiple
+                multiple={false} // Allow selecting only one folder at a time
                 webkitdirectory=""
                 directory=""
+                onChange={() => {
+                  uploadDatasetImage(); // Call uploadDatasetImage when files are selected
+                }}
               />
+              <div>
+                <label className="ml-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={deleteExisting === "TRUE"}
+                    onChange={handleCheckboxChange}
+                    className="mr-1"
+                  />
+                  Keep Dataset
+                </label>
+              </div>
             </div>
           </div>
           <div className="h-[400px] w-[400px] overflow-hidden">
@@ -277,7 +445,10 @@ export default function Home() {
             />
           </div>
         </div>
-        <button className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-red-600 hover:text-black hover:shadow-xl transition-all text-2xl">
+        <button
+          className="bg-black text-white px-3 py-3 w-[175px] rounded-full font-bold hover:bg-red-600 hover:text-black hover:shadow-xl transition-all text-2xl"
+          onClick={forceload}
+        >
           Search
         </button>
         <section
