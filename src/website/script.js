@@ -49,11 +49,23 @@ async function fetchImages(page) {
     
     maxPage = data.max_page
     data.images.forEach(image => {
+        const divElement = document.createElement('div');
+
+        // Create an img element
         const imgElement = document.createElement('img');
         imgElement.src = image.url;
         imgElement.style.maxWidth = '300px';
         imgElement.style.margin = '10px';
-        imageContainer.appendChild(imgElement);
+
+        const textElement = document.createElement('b');
+        textElement.textContent = `${(image.similarity*100).toFixed(2)}%`;
+
+        // Append the img and text elements to the div
+        divElement.appendChild(imgElement);
+        divElement.appendChild(textElement);
+
+        // Append the div to the imageContainer
+        imageContainer.appendChild(divElement);
     });
     // Update the page indicator
     const pageIndicator = document.getElementById('pageIndicator');
