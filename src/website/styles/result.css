@@ -1,11 +1,15 @@
 .result {
     background-color: beige ;
     text-align: center;
+    display: inline-block;
+    padding: 10px 0 10px 0;
+    width: 100%;
+    height: fit-content;
 }
 
 .grid-result{
     display: flex;
-    margin-top: 50px;
+    margin: 20px 10px 20px 10px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     column-gap: 20px;
@@ -13,7 +17,16 @@
 }
 
 .result-place{
-    background-color: grey; height: 200px
+    background-color: grey;
+    height: auto;
+    min-height: 15vh;
+    max-height: 40vh;
+    display: flex;
+    flex-direction: column; 
+}
+
+.result-place img{
+    object-fit: cover;
 }
 
 .result-text{
