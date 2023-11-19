@@ -36,8 +36,25 @@ export default function Home() {
 
   useEffect(() => {
     if (isReset) {
-      fetch(`/reset`); // Call reset logic here using fetch or perform other actions
-      setIsReset(false); // Reset the isReset state back to false
+      fetch(`/reset`) // Call reset logic here using fetch or perform other actions
+        .then((response) => {
+          if (response.ok) {
+            const modeText = document.getElementById("mode_text");
+            if (modeText) {
+              // Manipulate the DOM element 'modeText'
+              modeText.textContent = "Updated text"; // For example, updating text content
+              // You can perform other DOM manipulations as needed
+            }
+          } else {
+            throw new Error("Failed to fetch");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          setIsReset(false); // Reset the isReset state back to false
+        });
     }
   }, [isReset]);
   function reset() {
@@ -198,8 +215,6 @@ export default function Home() {
       console.error("Error during force load:", error);
     }
   };
-
-  const modeText = document.getElementById("mode_text");
 
   async function displayUpload() {
     const response = await fetch(`/display_upload`);
