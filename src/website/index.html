@@ -39,7 +39,7 @@
         <div class="img-input">
             <div style="height:0px;overflow:hidden">
               <input type="file" id="fileInput" onchange="uploadSearchImage()" accept="image/*" style="display:none;">
-              <input type="file" id="datasetInput" onchange="uploadDatasetImage()" accept="image/*" multiple style="display:none;" webkitdirectory>
+              <input type="file" id="datasetInput" onchange="uploadDatasetImage()" multiple style="display:none;" webkitdirectory directory>
             </div>
             <button class="upload-image" type="button" onclick="chooseFile();">Upload Image</button>
               
@@ -243,35 +243,40 @@ async function fetchImages(page) {
         fetch(`/test_ping`);
         console.log("Ping");
     }
-
+    
     function uploadDatasetImage() {
-        console.log("Trigger dataset upload");
-        const fileInput = document.getElementById('datasetInput');
-        const files = fileInput.files;
-        if (files.length > 0) {
-            const formData = new FormData();
-            for (const file of files) {
-                formData.append('files', file);
-            }
-            fetch(`/upload_dataset?delete_existing=${deleteExisting}`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    datasetUploaded = true;
-                    console.log('Dataset uploaded:', data.filenames);
-                    if (datasetUploaded && fileUploaded){
-                        fetchImages(1);
-                    }
-                    // after uploading dataset, attempt to calculate images
-                })
-                .catch(error => {
-                    console.error('Error uploading dataset files:', error);
-                });
+    console.log("Trigger dataset upload");
+    const fileInput = document.getElementById('datasetInput');
+    const files = fileInput.files;
+
+    if (files.length > 0) {
+        const formData = new FormData();
+
+        for (const file of files) {
+            console.log('File:', file.name);
+            // Append each file to the FormData separately
+            formData.append('files', file);
         }
 
+        // Send the FormData to the backend
+        fetch(`/upload_dataset?`, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            datasetUploaded = true;
+            console.log('Dataset uploaded:', data.filenames);
+            if (datasetUploaded && fileUploaded) {
+                fetchImages(1);
+            }
+            // after uploading dataset, attempt to calculate images
+        })
+        .catch(error => {
+            console.error('Error uploading dataset files:', error);
+        });
     }
+}
 
     const modeText = document.getElementById('mode_text');
 

@@ -104,8 +104,31 @@ async def forceLoad():
     app.mount("/uploaded", StaticFiles(directory="website/uploaded"), name="images")
     get_images(1)
 
+@app.post("/clear_dataset")
+async def clear_dataset():
+    global img_data_dict
+    global last_mode
+    dataset_folder = "website/dataset"
+    print("Deleting existing dataset")
+    # Delete existing images in the folder
+    
+    if (not os.path.exists(dataset_folder)):
+        return {"message":"Done"}
+
+    for existing_file in os.listdir(dataset_folder):
+        file_path = os.path.join(dataset_folder, existing_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(f"Error deleting file {file_path}: {e}")
+    # Reset img_data_dict to an empty dictionary
+    img_data_dict = {}
+    # Last mode is set to none to induce recalculation
+    last_mode = None
+
 @app.post("/upload_dataset")
-async def upload_dataset(files: List[UploadFile] = File(...), delete_existing="FALSE"):
+async def upload_dataset(files: List[UploadFile] = File(...)):
     global img_data_dict
     global last_mode
     dataset_folder = "website/dataset"
@@ -113,25 +136,11 @@ async def upload_dataset(files: List[UploadFile] = File(...), delete_existing="F
     if (not os.path.exists(dataset_folder)):
         os.makedirs(dataset_folder,exist_ok=True)
 
-    if delete_existing == "TRUE":
-        print("Deleting existing dataset")
-        # Delete existing images in the folder
-        for existing_file in os.listdir(dataset_folder):
-            file_path = os.path.join(dataset_folder, existing_file)
-            try:
-                if os.path.isfile(file_path):
-                    os.unlink(file_path)
-            except Exception as e:
-                print(f"Error deleting file {file_path}: {e}")
-
-        # Reset img_data_dict to an empty dictionary
-        img_data_dict = {}
-        # Last mode is set to none to induce recalculation
-        last_mode = None
 
     # Save the newly uploaded images
     for file in files:
-        filename = os.path.join(dataset_folder, file.filename)
+        imgFileName = file.filename.split("/")[-1]
+        filename = os.path.join(dataset_folder, imgFileName)
         with open(filename, "wb") as image_file:
             image_file.write(file.file.read())
 
