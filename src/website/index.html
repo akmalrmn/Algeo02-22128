@@ -275,9 +275,11 @@ async function fetchImages(page) {
         // Send the FormData to the backend
         datasetUploaded = true;
         console.log('Dataset uploaded');
+        /*
         if (datasetUploaded && fileUploaded) {
             fetchImages(1);
         }
+        */
         // after uploading dataset, attempt to calculate images
     }
 }
