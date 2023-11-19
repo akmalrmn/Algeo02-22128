@@ -18,7 +18,7 @@ os.makedirs("/website/uploaded", exist_ok=True)
 os.makedirs("/website/dataset", exist_ok=True)
 
 app = FastAPI()
-app.mount("/styles", StaticFiles(directory="./website/styles"), name="styles")
+app.mount("/styles", StaticFiles(directory="website/styles"), name="styles")
 
 # Global variables
 img_data_dict = {}
@@ -79,7 +79,6 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
 
         # Sort the images based on their assigned values
     image_data = sorted(image_data, key=lambda x: x["similarity"], reverse= True)
-    print(image_data)
 
     # Calculate the start and end index for the requested page
     images_per_page = 6
