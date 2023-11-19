@@ -71,9 +71,9 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
         #log_file.write("fetching",image_url,"\n")
 
         count += 1
-        print(img_data_dict)
-        print(filename)
-        print(img_data_dict[filename])
+        #print(img_data_dict)
+        #print(filename)
+        #print(img_data_dict[filename])
         value = cosineSimilarity(search_value,img_data_dict[filename]["value"])
         image_data.append({"url": image_url, "similarity": value})
 
@@ -85,11 +85,14 @@ async def get_images(page: int = 1, mode = "TEKSTUR"):
     start_index = (page - 1) * images_per_page
     end_index = start_index + images_per_page
 
-    # Return the sorted image URLs for the requested page
-    return {
+    retval = {
     "images": [{"url": image["url"], "similarity": image["similarity"]} for image in image_data[start_index:end_index]],
     "max_page": (count // images_per_page)
     }
+
+    print(retval)
+    # Return the sorted image URLs for the requested page
+    return retval
 # Process image
 
 @app.get("/reset")
