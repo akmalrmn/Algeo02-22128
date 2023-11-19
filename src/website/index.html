@@ -134,7 +134,7 @@ let currentPage = 1;
 let fileUploaded = false;
 let datasetUploaded = false;
 let maxPage = 99;
-let deleteExisting = "FALSE";
+let deleteExisting = "TRUE";
 async function displayUpload() {
     const response = await fetch(`/display_upload`);
     const data = await response.json();
@@ -213,6 +213,7 @@ async function fetchImages(page) {
     }
     function reset(){
         fetch(`/reset`);
+        clear_dataset();
     }
     function uploadSearchImage() {
         const fileInput = document.getElementById('fileInput');
@@ -244,7 +245,11 @@ async function fetchImages(page) {
         console.log("Ping");
     }
     
-
+    function clear_dataset() {
+    fetch(`/clear_dataset`, {
+        method: 'POST'
+    });
+}
 
     function uploadDatasetImage() {
     console.log("Trigger dataset upload");
@@ -252,7 +257,7 @@ async function fetchImages(page) {
     const files = fileInput.files;
     
     if (deleteExisting == "TRUE"){
-        fetch(`/clear_dataset`)
+        clear_dataset()
       } 
 
     if (files.length > 0) {
