@@ -1,6 +1,6 @@
 # Algeo02-22128 
-> Outline a brief description of your project.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+> Image Retrieval System 
+
 
 ## Table of Contents
 * [General Info](#general-information)
@@ -30,23 +30,23 @@ List the ready features here:
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
+![Example screenshot](./src/Screenshot (1127).png)
 <!-- If you have screenshots you'd like to share, include them here. -->
 
 
 ## Usage
 How to run:
 - Backend
-     1. `pip install flask`
-     2. `pip install fastapi`
-     3. `pip install uvicorn`
-     4. `pip install python-multipart`
-     5. Go to main.py file and then run `Uvicorn main:app -refresh`
+     1. pip install flask
+     2. pip install fastapi
+     3. pip install uvicorn
+     4. pip install python-multipart
+     5. Go to main.py file and then run Uvicorn main:app -refresh
 
 - Frontend
      1. install Node.js
-     2. `npm install`
-     3. Go to react-web folder and then run `npm run dev`
+     2. npm install
+     3. Go to react-web folder and then run npm run dev
 
 
 

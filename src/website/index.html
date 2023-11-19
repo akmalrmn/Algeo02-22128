@@ -49,7 +49,7 @@
 
             <button class="upload-image" type="button" onclick="swap_mode();">Swap Mode</button>
             <b>Current mode: </b>
-            <b id="mode_text">TEKSTUR</b>
+            <b id="mode_text">WARNA</b>
             <button class="upload-image" type="button" onclick="persistDataset();">Keep Dataset</button>
             <b>Delete existing dataset?: </b>
             <b id="persistance_text">FALSE</b>
@@ -133,7 +133,7 @@
     function chooseDataset() {
       document.getElementById("datasetInput").click();
     }
-    let mode = "TEKSTUR";
+    let mode = "WARNA";
 let currentPage = 1;
 let fileUploaded = false;
 let datasetUploaded = false;
@@ -279,9 +279,11 @@ async function fetchImages(page) {
         // Send the FormData to the backend
         datasetUploaded = true;
         console.log('Dataset uploaded');
+        /*
         if (datasetUploaded && fileUploaded) {
             fetchImages(1);
         }
+        */
         // after uploading dataset, attempt to calculate images
     }
 }
