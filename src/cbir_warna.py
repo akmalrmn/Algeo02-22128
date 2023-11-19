@@ -69,8 +69,8 @@ def cbirColor(input_image, dataset_dir, bins=8):
     return sorted_indices, sorted_similarities
 
 def run():
-    dataset_dir = "src/dataset" 
-    input_image = cv2.imread("src/dataset/4.jpg ")
+    dataset_dir = "src/website/dataset" 
+    input_image = cv2.imread("src/dataset/0.jpg ")
     start_time = time.time()
     sorted_indices, sorted_similarities = cbirColor(input_image, dataset_dir, bins=8)
     end_time = time.time()
