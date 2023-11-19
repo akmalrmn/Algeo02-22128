@@ -1,15 +1,7 @@
 "use client";
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  ChangeEvent,
-  useCallback,
-  Component,
-} from "react";
+import React, { useState, useRef, useEffect, ChangeEvent } from "react";
 import Switch from "react-switch";
-import { useDropzone } from "react-dropzone";
 import Navbar from "./components/Navbar";
 import Image, { StaticImageData } from "next/image";
 import placeholder from "@/public/placeholder.jpg";
@@ -36,14 +28,12 @@ export default function Home() {
 
   useEffect(() => {
     if (isReset) {
-      fetch(`/reset`) // Call reset logic here using fetch or perform other actions
+      fetch(`/reset`)
         .then((response) => {
           if (response.ok) {
             const modeText = document.getElementById("mode_text");
             if (modeText) {
-              // Manipulate the DOM element 'modeText'
-              modeText.textContent = "Updated text"; // For example, updating text content
-              // You can perform other DOM manipulations as needed
+              modeText.textContent = "Updated text";
             }
           } else {
             throw new Error("Failed to fetch");
@@ -53,12 +43,12 @@ export default function Home() {
           console.error("Error:", error);
         })
         .finally(() => {
-          setIsReset(false); // Reset the isReset state back to false
+          setIsReset(false);
         });
     }
   }, [isReset]);
   function reset() {
-    setIsReset(true); // Set isReset to true to trigger the useEffect
+    setIsReset(true);
   }
 
   async function displayUpload() {
@@ -67,8 +57,7 @@ export default function Home() {
     const imageContainer = document.getElementById("upload-image-container");
 
     if (imageContainer) {
-      imageContainer.innerHTML = ""; // Clear existing images
-
+      imageContainer.innerHTML = "";
       if (data.image) {
         const imgElement = document.createElement("img");
         imgElement.src = data.image;
@@ -93,37 +82,6 @@ export default function Home() {
     );
   }
 
-  async function fetchImages(page) {
-    const imageContainer = document.getElementById("image-container");
-    const pageIndicator = document.getElementById("pageIndicator");
-
-    if (imageContainer && pageIndicator && datasetUploaded && fileUploaded) {
-      imageContainer.innerHTML = ""; // Clear existing images
-      console.log("mode :", mode);
-
-      try {
-        const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
-        const data = await response.json();
-
-        // Update maxPage using setMaxPage
-        setMaxPage(data.max_page);
-
-        data.images.forEach((image) => {
-          const imgElement = document.createElement("img");
-          imgElement.src = image.url;
-          imgElement.style.maxWidth = "300px";
-          imgElement.style.margin = "10px";
-          imageContainer.appendChild(imgElement);
-        });
-
-        // Update the page indicator text content
-        pageIndicator.textContent = `Page ${page}`;
-      } catch (error) {
-        console.error("Error fetching images:", error);
-      }
-    }
-  }
-
   function uploadSearchImage() {
     const fileInput = document.getElementById(
       "fileInput"
@@ -141,19 +99,18 @@ export default function Home() {
       })
         .then((response) => response.json())
         .then((data) => {
-          setFileUploaded(true); // Update fileUploaded state
+          setFileUploaded(true);
           displayUpload();
           console.log("Search file uploaded:", data.filenames);
 
-          // Read the uploaded image and update displayedImage state
           const uploadedImage = fileInput.files[0];
           const reader = new FileReader();
 
           reader.onloadend = () => {
-            setDisplayedImage(reader.result as string); // Update displayedImage state with the uploaded image URL
+            setDisplayedImage(reader.result as string);
           };
 
-          reader.readAsDataURL(uploadedImage); // Read the uploaded file as a data URL
+          reader.readAsDataURL(uploadedImage);
         })
         .catch((error) => {
           console.error("Error uploading files:", error);
@@ -190,12 +147,11 @@ export default function Home() {
       })
         .then((response) => response.json())
         .then((data) => {
-          setDatasetUploaded(true); // Update datasetUploaded state
+          setDatasetUploaded(true);
           console.log("Dataset uploaded:", data.filenames);
           if (datasetUploaded && fileUploaded) {
             fetchImages(1);
           }
-          // after uploading dataset, attempt to calculate images
         })
         .catch((error) => {
           console.error("Error uploading dataset files:", error);
@@ -216,23 +172,9 @@ export default function Home() {
     }
   };
 
-  async function displayUpload() {
-    const response = await fetch(`/display_upload`);
-    const data = await response.json();
-    const imageContainer = document.getElementById("upload-image-container");
-    imageContainer.innerHTML = ""; // Clear existing images
-    if (data.image) {
-      const imgElement = document.createElement("img");
-      imgElement.src = data.image;
-      imgElement.style.height = "100%";
-      imgElement.style.margin = "10px";
-      imageContainer.appendChild(imgElement);
-    }
-  }
-
   async function fetchImages(page) {
     const imageContainer = document.getElementById("image-container");
-    imageContainer.innerHTML = ""; // Clear existing images
+    imageContainer.innerHTML = "";
 
     if (datasetUploaded && fileUploaded) {
       console.log("mode :", mode);
@@ -240,13 +182,12 @@ export default function Home() {
         const response = await fetch(`/get_images?page=${page}&mode=${mode}`);
         const data = await response.json();
 
-        setMaxPage(data.max_page); // Update maxPage state
+        setMaxPage(data.max_page);
 
         data.images.forEach((image) => {
           const divElement = document.createElement("div");
           divElement.classList.add("result-place");
 
-          // Create an img element
           const imgElement = document.createElement("img");
           imgElement.src = image.url;
           imgElement.style.maxWidth = "300px";
@@ -258,15 +199,12 @@ export default function Home() {
           textElement.classList.add("result-text");
           textElement.textContent = `${(image.similarity * 100).toFixed(2)}%`;
 
-          // Append the img and text elements to the div
           divElement.appendChild(imgElement);
           divElement.appendChild(textElement);
 
-          // Append the div to the imageContainer
           imageContainer.appendChild(divElement);
         });
 
-        // Update the page indicator
         const pageIndicator = document.getElementById("pageIndicator");
         pageIndicator.textContent = `Page ${page}`;
       } catch (error) {
@@ -294,8 +232,7 @@ export default function Home() {
   };
 
   const handleModeChange = (checked) => {
-    setMode(checked); // Update the mode state based on the toggle
-    // You can add other logic here based on the mode change
+    setMode(checked);
   };
 
   const handlePrevPage = () => {
@@ -331,22 +268,15 @@ export default function Home() {
           const data = await response.json();
           console.log("Dataset uploaded:", data.filenames);
 
-          // Additional logic after successful dataset upload
           setDatasetUploaded(true); // Update datasetUploaded state
           if (datasetUploaded && fileUploaded) {
-            fetchImages(1); // Fetch images if both dataset and file are uploaded
+            fetchImages(1);
           }
-          // Add more logic here if needed after dataset upload
-          // For example:
-          // - Redirect to another page
-          // - Show a success message to the user
         } else {
           throw new Error("Failed to upload dataset");
         }
       } catch (error) {
         console.error("Error uploading dataset files:", error);
-        // Handle error scenarios if needed
-        // For example, display an error message to the user
       }
     }
   };
@@ -357,10 +287,10 @@ export default function Home() {
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        setDisplayedImage(String(reader.result)); // Update displayedImage state with new image URL
+        setDisplayedImage(String(reader.result));
       };
 
-      reader.readAsDataURL(file); // Read the uploaded file as a data URL
+      reader.readAsDataURL(file);
     }
   };
 
@@ -380,18 +310,17 @@ export default function Home() {
             <div>
               <h3>Choose Your CBIR Method!</h3>
               <Switch
-                onChange={swap_mode} // Use the swap_mode function as the onChange handler
-                checked={mode === "Texture"} // Set the checked state based on the mode
-                checkedIcon={false} // Customize the icons if needed
+                onChange={swap_mode}
+                checked={mode === "Texture"}
+                checkedIcon={false}
                 uncheckedIcon={false}
-                onColor="#bbbbbb" // Example colors
+                onColor="#bbbbbb"
                 offColor="#86d3ff"
                 onHandleColor="#cccccc"
                 offHandleColor="#2693e6"
                 height={28}
                 width={56}
               />
-              {/* You can display other content based on the mode here */}
               <p>Current Method: {mode}</p>
             </div>
             <button
@@ -430,11 +359,11 @@ export default function Home() {
                 type="file"
                 ref={folderInputRef}
                 style={{ display: "none" }}
-                multiple={false} // Allow selecting only one folder at a time
+                multiple={false}
                 webkitdirectory=""
                 directory=""
                 onChange={() => {
-                  uploadDatasetImage(); // Call uploadDatasetImage when files are selected
+                  uploadDatasetImage();
                 }}
               />
               <div>
@@ -468,10 +397,61 @@ export default function Home() {
         </button>
         <section
           id="result"
-          className=" text-black flex flex-col items-center text-5xl font-bold bg-[beige] w-full h-full mt-10"
+          className="text-black flex flex-col items-center font-bold bg-[beige] w-full h-full mt-10"
         >
-          <h3 className="">Result</h3>
-          <div className="grid-cols-6 columns-6 grid"></div>
+          <h3 className="text-5xl pt-10">Result</h3>
+          <div className="grid grid-cols-3 gap-y-4 gap-x-16 mt-6 pb-5">
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 1"
+              className="max-w-full h-auto"
+            />
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 2"
+              className="max-w-full h-auto"
+            />
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 3"
+              className="max-w-full h-auto"
+            />
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 4"
+              className="max-w-full h-auto"
+            />
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 5"
+              className="max-w-full h-auto"
+            />
+            <img
+              src="https://via.placeholder.com/300"
+              alt="Image 6"
+              className="max-w-full h-auto"
+            />
+          </div>
+          <div
+            id="pagination-container"
+            className="mt-6 flex justify-end items-center pb-10"
+          >
+            <button
+              id="prevPageButton"
+              className="mr-2 py-1 px-3 bg-[#86d3ff] hover:bg-gray-400 rounded-md"
+            >
+              Previous Page
+            </button>
+            <span id="pageIndicator" className="mr-2">
+              Page 1
+            </span>
+            <button
+              id="nextPageButton"
+              className="py-1 px-3 bg-[#86d3ff] hover:bg-gray-400 rounded-md"
+            >
+              Next Page
+            </button>
+          </div>
         </section>
         <section
           id="how-to-use"
@@ -514,9 +494,9 @@ export default function Home() {
                 border: "4px solid black",
                 overflow: "hidden",
                 position: "relative",
-                width: "300px", // Adjust width as needed
-                height: "420px", // Adjust height as needed
-                display: "inline-block", // Ensures inline block display
+                width: "300px",
+                height: "420px",
+                display: "inline-block",
                 borderRadius: "20px",
               }}
             >
@@ -548,9 +528,9 @@ export default function Home() {
                   border: "4px solid black",
                   overflow: "hidden",
                   position: "relative",
-                  width: "300px", // Adjust width as needed
-                  height: "420px", // Adjust height as needed
-                  display: "inline-block", // Ensures inline block display
+                  width: "300px",
+                  height: "420px",
+                  display: "inline-block",
                   borderRadius: "20px",
                 }}
               >
@@ -583,9 +563,9 @@ export default function Home() {
                   border: "4px solid black",
                   overflow: "hidden",
                   position: "relative",
-                  width: "300px", // Adjust width as needed
-                  height: "420px", // Adjust height as needed
-                  display: "inline-block", // Ensures inline block display
+                  width: "300px",
+                  height: "420px",
+                  display: "inline-block",
                   borderRadius: "20px",
                 }}
               >
@@ -599,15 +579,13 @@ export default function Home() {
                 <div
                   style={{
                     position: "absolute",
-                    bottom: "0",
-                    left: "0",
                     width: "100%",
                     color: "black",
                     textAlign: "center",
-                    padding: "9.5px",
+                    padding: "8px",
                   }}
                 >
-                  <p className="text-xl">Justin Aditya Putra Prabakti</p>
+                  <p className="text-xl">Justin Aditya Putra Prabakti </p>
                   <p className="text-xl">13522130</p>
                 </div>
               </div>
