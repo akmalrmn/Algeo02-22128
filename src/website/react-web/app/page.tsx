@@ -434,22 +434,22 @@ export default function Home() {
           </div>
           <div
             id="pagination-container"
-            className="mt-6 flex justify-end items-center pb-10"
+            className="bottom-4 right-4 pb-10"
           >
             <button
               id="prevPageButton"
-              className="mr-2 py-1 px-3 bg-[#86d3ff] hover:bg-gray-400 rounded-md"
+              className="mr-2 py-1 px-3 bg-gray-300 hover:bg-gray-400 rounded-md"
             >
-              Previous Page
+              {"<"}
             </button>
             <span id="pageIndicator" className="mr-2">
               Page 1
             </span>
             <button
               id="nextPageButton"
-              className="py-1 px-3 bg-[#86d3ff] hover:bg-gray-400 rounded-md"
+              className="py-1 px-3 bg-gray-300 hover:bg-gray-400 rounded-md"
             >
-              Next Page
+              {">"}
             </button>
           </div>
         </section>
