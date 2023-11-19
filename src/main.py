@@ -17,6 +17,7 @@ os.makedirs("/website/uploaded", exist_ok=True)
 os.makedirs("/website/dataset", exist_ok=True)
 
 app = FastAPI()
+app.mount("/styles", StaticFiles(directory="./website/styles"), name="styles")
 
 # Global variables
 img_data_dict = {}
