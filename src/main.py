@@ -9,6 +9,7 @@ import CBIR_Tekstur as cbt
 import cbir_warna as cw
 import atexit
 import time
+import numpy as np
 
 current_directory = os.getcwd()
 
@@ -254,16 +255,10 @@ def process_dataset(mode: str = "TEKSTUR"):
                 print(f"[{end_time - start_time}]")
 
 def cosineSimilarity(matrix1, matrix2):
-    # Calculate dot product
-    dot = sum(e1 * e2 for e1, e2 in zip(matrix1, matrix2))
-    
-    # Calculate norms
-    norm1 = math.sqrt(sum(e ** 2 for e in matrix1))
-    norm2 = math.sqrt(sum(e ** 2 for e in matrix2))
-    
-    # Calculate cosine similarity
-    similarity = dot / (norm1 * norm2) if (norm1 * norm2) != 0 else 0  # Avoid division by zero
-    
+    dot = np.dot(matrix1, matrix2)
+    norm1 = np.sqrt(np.dot(matrix1, matrix1))
+    norm2 = np.sqrt(np.dot(matrix2, matrix2))
+    similarity = dot / (norm1 * norm2) if (norm1 * norm2) != 0 else 0
     return similarity
 
 def count_files(filepath: str) -> int:
