@@ -13,7 +13,7 @@
 
 
 ## General Information
-- Website design using ...
+- Website design using Vanilla and FastAPI
 - CBIR Color and CBIR Texture using python programming language
 - 13522128 Mohammad Andhika Fadillah
 - 13522130 Justin Aditya Putra Prabakti
@@ -30,7 +30,7 @@ List the ready features here:
 
 
 ## Screenshots
-![Example screenshot](./src/Screenshot (1127).png)
+![Example screenshot](./src/cover.png)
 <!-- If you have screenshots you'd like to share, include them here. -->
 
 
@@ -52,6 +52,9 @@ How to run:
 
 ## Programming Language Used
 - Python
+- JavaScript
+- HTML
+- CSS
 
 
 ## Contact 
