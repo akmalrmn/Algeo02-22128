@@ -244,37 +244,36 @@ async function fetchImages(page) {
         console.log("Ping");
     }
     
+
+
     function uploadDatasetImage() {
     console.log("Trigger dataset upload");
     const fileInput = document.getElementById('datasetInput');
     const files = fileInput.files;
+    
+    if (deleteExisting == "TRUE"){
+        fetch(`/clear_dataset`)
+      } 
 
     if (files.length > 0) {
         const formData = new FormData();
-
+        i = 0;
         for (const file of files) {
             console.log('File:', file.name);
             // Append each file to the FormData separately
-            formData.append('files', file);
-        }
-
-        // Send the FormData to the backend
-        fetch(`/upload_dataset?`, {
+            formData.set('files', file);
+            fetch(`/upload_dataset?`, {
             method: 'POST',
             body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
+            })
+          }
+        // Send the FormData to the backend
             datasetUploaded = true;
-            console.log('Dataset uploaded:', data.filenames);
+            console.log('Dataset uploaded');
             if (datasetUploaded && fileUploaded) {
                 fetchImages(1);
             }
             // after uploading dataset, attempt to calculate images
-        })
-        .catch(error => {
-            console.error('Error uploading dataset files:', error);
-        });
     }
 }
 
