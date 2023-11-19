@@ -52,6 +52,9 @@ How to run:
 
 ## Programming Language Used
 - Python
+- JavaScript
+- HTML
+- CSS
 
 
 ## Contact 
